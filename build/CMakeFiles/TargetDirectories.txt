@@ -1,0 +1,3 @@
+/home/victor/Desktop/SearchTree/build/CMakeFiles/search_tree.dir
+/home/victor/Desktop/SearchTree/build/CMakeFiles/edit_cache.dir
+/home/victor/Desktop/SearchTree/build/CMakeFiles/rebuild_cache.dir
