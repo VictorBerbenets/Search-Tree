@@ -1,1 +1,0 @@
-/usr/bin/c++ -g CMakeFiles/search_tree.dir/src/main.cpp.o -o search_tree 
