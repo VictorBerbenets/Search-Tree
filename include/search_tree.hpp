@@ -39,15 +39,16 @@ class AVL_Tree final {
         auto tmp     = pt->right_;
         pt->parent_  = pt->right_;
         pt->right_   = pt->right_->left_;
+        if (pt->right_) {
+            if (pt->right_->left_) {
+                pt->right_->left_->parent_ = pt;
+            }
+        }
         tmp->left_   = pt;
         tmp->parent_ = parent;
-        pt = tmp;
-#if 0
-        auto right_left_subtree = pt->right_->left_;
-        std::swap(right
-        pt = tmp->right;
-        std::swap()
-#endif
+        correct_height(tmp);
+        correct_height(pt);
+       // pt = tmp;
     }
 
     void big_left_turn(pointer pt) {
@@ -117,6 +118,15 @@ template <typename Iter>
             pt = pt->parent_;
         }
     }
+    size_type height(const_pointer pt) const {
+        return pt ? pt->height_ : 0;
+    }
+
+    void correct_height(pointer pt) {
+        size_type left_h  = height(pt->left_);
+        size_type right_h = height(pt->right_);
+        pt->height_ = (left_h > right_h ? left_h: right_h) + 1;
+    }
 
     void insert(const KeyT& key) {
         if (root_node_ == nullptr) {
@@ -151,15 +161,14 @@ template <typename Iter>
     
     void balance_tree(pointer& pt) {
         while(pt) {
-            std::cout << "TREE\n";
+            std::cout << "---------------------TREE----------------------\n";
             print(ptr());
-            std::cout << "pt = " << pt << std::endl;
-            std::cout << "key = " << pt->key_ << std::endl;
+            std::cout << "-----------------------------------------------\n";
             if ( is_disbalance( height_difference(pt->right_, pt->left_) ) ) {
                 std::cout << "IS DISBALANCE\n";
                 if (height_difference(pt->right_->right_, pt->right_->left_) >= 0) {
                     std::cout << "LEFT TURN\n";
-            std::cout << "key = " << pt->key_ << std::endl;
+//            std::cout << "key = " << pt->key_ << std::endl;
                     left_turn(pt);
                 } else {
                     big_left_turn(pt);
