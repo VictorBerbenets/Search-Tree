@@ -8,6 +8,7 @@
 #include <initializer_list>
 
 #include "node.hpp"
+#include "graph_tree.hpp"
 
 namespace yLAB {
 
@@ -30,8 +31,12 @@ class AVL_Tree final {
 
     }
 
-    void left_turn(pointer pt) {
+    pointer left_turn(pointer pt) {
         auto& parent = pt->parent_;
+        std::cout << "KEY = " << pt->key_ << std::endl;
+            std::cout << "---------------------TREE BEFORE----------------------\n";
+            print(ptr());
+            std::cout << "------------------------------------------------------\n";
         if (parent) {
             parent->left_ == pt ? parent->left_ : parent->right_ = pt->right_;
         }
@@ -48,7 +53,10 @@ class AVL_Tree final {
         tmp->parent_ = parent;
         correct_height(tmp);
         correct_height(pt);
-       // pt = tmp;
+            std::cout << "---------------------TREE AFTER----------------------\n";
+            print(ptr());
+            std::cout << "------------------------------------------------------\n";
+        return tmp;
     }
 
     void big_left_turn(pointer pt) {
@@ -56,10 +64,18 @@ class AVL_Tree final {
     }
     
     difference_type height_difference(const_pointer left, const_pointer right) const noexcept {
-        return (left ? left->height_ : 0) - (right ? right->height_ : 0);
+        auto res = (left ? (left->height_ + 1) : 0) - (right ? (right->height_ + 1) : 0);
+        std::cout << "LEFT HEIGHT  = " << (left ? (left->height_ + 1) : 0) << std::endl;
+        std::cout << "RIGHT HEIGHT = " << (right ? (right->height_ + 1): 0) << std::endl;
+#if 0
+        std::cout << "IN HEIGHT DIFFERENCE:" << std::endl;
+        std::cout << "DIFF = " << res << std::endl;
+#endif
+        return res;
+        //return (left ? left->height_ : 0) - (right ? right->height_ : 0);
     }
     
-    bool is_disbalance(difference_type diff) const noexcept { return diff == DIFF_HEIGHT; };
+    bool is_disbalance(difference_type diff) const noexcept { /*std::cout << "DIFF = " << diff << std::endl;*/ return diff == DIFF_HEIGHT; };
 public:
 template <typename Iter>
     AVL_Tree(Iter begin, Iter end, const Compare& comp = Compare()): comp_ {comp} {
@@ -98,15 +114,20 @@ template <typename Iter>
     }
     
     const_pointer ptr() const noexcept { return root_node_; };
+    
+    void Graph_dump() {
+        
+    }
 
     void print(const_pointer pt) {
         if (!pt) { return; }
+        
+        std::cout << "key = " << pt->key_ << std::endl;
+        std::cout << "height = " << pt->height_ << std::endl;
 
         if (pt->left_) {
             print(pt->left_);
         }
-        std::cout << "key = " << pt->key_ << std::endl;
-        std::cout << "height = " << pt->height_ << std::endl;
         if (pt->right_) {
             print(pt->right_);
         }
@@ -129,18 +150,16 @@ template <typename Iter>
     }
 
     void insert(const KeyT& key) {
+        std::cout << "KEY TO INSERT = " << key << std::endl;
         if (root_node_ == nullptr) {
             root_node_ = new Node {key};
             return;
         }
-        pointer parent {};
         auto curr_node = root_node_;
         while(curr_node) {
-//            if (curr_node) { curr_node->height_++; }
-            parent = curr_node;
             if (comp_(key, curr_node->key_)) {
                 if (!curr_node->left_) { 
-                    curr_node->left_ = new Node {key, parent};
+                    curr_node->left_ = new Node {key, curr_node};
                     increase_heights(curr_node);
                     break; 
                 }
@@ -149,27 +168,30 @@ template <typename Iter>
                 return ;
             } else {
                 if (!curr_node->right_) {
-                    curr_node->right_ = new Node {key, parent};
+                    curr_node->right_ = new Node {key, curr_node};
                     increase_heights(curr_node);
                     break;
                 }
                 curr_node = curr_node->right_;
             }
         }
+        std::cout << "KEY TO BALANCE = " << curr_node->key_ << std::endl;
         balance_tree(curr_node);
     }
     
     void balance_tree(pointer& pt) {
+        std::cout << "---CHECKING KEY        = " << pt->key_ << std::endl;
+        std::cout << "---CHECKING KEY HEIGHT = " << pt->height_ << std::endl;
         while(pt) {
-            std::cout << "---------------------TREE----------------------\n";
-            print(ptr());
-            std::cout << "-----------------------------------------------\n";
+            std::cout << "---CICLE KEY       = " << pt->key_ << std::endl;
+            std::cout << "---CHECKING KEY HEIGHT = " << pt->height_ << std::endl;
+           // std::cout << "---PT BEFORE IF = " << pt << std::endl;
             if ( is_disbalance( height_difference(pt->right_, pt->left_) ) ) {
-                std::cout << "IS DISBALANCE\n";
+                std::cout << "IS DISBALANCE ON KEY = " << pt->key_ << std::endl;
                 if (height_difference(pt->right_->right_, pt->right_->left_) >= 0) {
                     std::cout << "LEFT TURN\n";
 //            std::cout << "key = " << pt->key_ << std::endl;
-                    left_turn(pt);
+                    pt = left_turn(pt);
                 } else {
                     big_left_turn(pt);
                 }
@@ -180,6 +202,7 @@ template <typename Iter>
                     big_right_turn(pt);
                 } 
             }
+           // std::cout << "---PT AFTER IF = " << pt << std::endl;
             pt = pt->parent_;
         }
     }
@@ -201,7 +224,7 @@ private:
     /*--------------------------------------------------------------*/
         KeyT key_;
         pointer parent_ , left_ {nullptr}, right_ {nullptr};
-        size_type height_ {0};
+        int height_ {0};
     };
 };
 
