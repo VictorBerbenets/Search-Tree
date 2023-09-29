@@ -66,6 +66,16 @@ std::string create_directory() {
                    << next_node << "; ";
         ++next_node;
     }
+    
+    void create_png_graph(const std::string& dot_name, std::string file_name) const {
+        std::string system_command = "dot -Tpng ";
+        system_command.append(dot_name);
+        system_command.append(" -o ");
+        system_command.append(dir_path_ + file_name.append(".png"));
+        
+        system(system_command.c_str());
+
+    }
 
 public:
     tree_painter(const pointer ptr)
@@ -107,6 +117,7 @@ public:
             curr_node++;
         }
         graph_file << "}\n";
+        create_png_graph(dot_name, file_name);
     }
 
 private:
