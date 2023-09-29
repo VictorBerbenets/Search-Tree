@@ -175,7 +175,7 @@ template <typename Iter>
             }
         }
         std::cout << "KEY TO BALANCE = " << curr_node->key_ << std::endl;
-        balance_tree(curr_node);
+        //balance_tree(curr_node);
     }
     
     void balance_tree(pointer& pt) {
@@ -209,7 +209,11 @@ template <typename Iter>
     void bypass_tree() const {
        // std::stack<> st;
     }
-
+    
+    void graph_dump() const {
+       graphics::tree_painter<KeyT> graph {root_node_};
+       graph.graph_dump();
+    }
 private:
     pointer root_node_ {nullptr};
     Compare comp_;

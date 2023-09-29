@@ -16,18 +16,18 @@ class tree_painter {
     
     enum class Nodes : char { Left = 1, Right = 2 };
 
-    const std::string dir_name = "data";
+    const std::string DIR_NAME = "data";
 
-std::string create_directory() {
+std::string create_dir() {
     using namespace std::filesystem;
 
-    std::string curr_path = current_path();
-    directory_entry resource_dir(curr_path.append(dir_name));
-
+    std::string relative_path = "..//include//";
+    directory_entry resource_dir(relative_path.append(DIR_NAME));
+    relative_path.append("//");
     if (!resource_dir.is_directory()) {
-        create_directory(curr_path.append(1, '/'));
+        create_directory(relative_path);
     }
-    return curr_path;
+    return relative_path;
 }
 
     void graph_print() {
@@ -54,7 +54,7 @@ std::string create_directory() {
 
     void create_node(std::ofstream& graph_file, pointer elem, size_type curr_node) const {
         graph_file << "node" << curr_node << " [shape = Mrecord, style = filled, fillcolor = \"#FFD0D0\", label ="
-                    "\"{address: "<< elem << "|key: "<< elem.key_ << "|height: "<< elem.height_ <<
+                    "\"{address: "<< elem << "|key: "<< elem->key_ << "|height: "<< elem->height_ <<
                     "| { <ptr1> left: "<< elem->left_ << "| <ptr2> right: " << elem->right_ << "|parent: " << elem->parent_ << "}}\"]\n";
     }
 
@@ -69,24 +69,22 @@ std::string create_directory() {
     
     void create_png_graph(const std::string& dot_name, std::string file_name) const {
         std::string system_command = "dot -Tpng ";
-        system_command.append(dot_name);
+        system_command.append(dir_path_ + dot_name);
         system_command.append(" -o ");
         system_command.append(dir_path_ + file_name.append(".png"));
-        
-        system(system_command.c_str());
 
+        system(system_command.c_str());
     }
 
 public:
     tree_painter(const pointer ptr)
     : root_ptr_ {ptr},
-      dir_path_ {create_directory()} {}
+      dir_path_ {create_dir()} {}
 
     void graph_dump(const std::string& file_name = "graph") const {
         std::string dot_name = file_name;
-        dot_name.append(".dot");
-        std::ofstream graph_file {dir_path_ + dot_name};
-
+        std::string dot_file = dir_path_ +  dot_name.append(".dot");
+        std::ofstream graph_file {dot_file};
         const char* dot_header = "digraph List {\n"
                                  "\tdpi = 100;\n"
                                  "\tfontname = \"Comic Sans MS\";\n"
@@ -100,10 +98,11 @@ public:
         std::queue<pointer> nodes_queue {};
         nodes_queue.push(root_ptr_);
         
-        size_type curr_node {0};
-        size_type next_node {0};
+        size_type curr_node {1};
+        size_type next_node {2};
         while(nodes_queue.size()) {
-            auto elem = nodes_queue.pop();
+            auto elem = nodes_queue.front();
+            nodes_queue.pop();
             create_node(graph_file, elem, curr_node);
             if (elem->left_) {
                 create_next_graph_node(graph_file, elem, curr_node, next_node, Nodes::Left);
