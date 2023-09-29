@@ -1,22 +1,22 @@
-#ifndef JUST_COOL_NODE_
-#define JUST_COOL_NODE_
+#ifndef TREE_NODE
+#define TREE_NODE
 
 namespace yLAB {
 
-template<typename T>
-class tree_iterator {
-    using iterator_category = std::bidirectional_iterator_tag;
-    using value_type        = T;
-    using pointer           = T*;
-    using reference         = T&;
-    using const_pointer     = const T*;
-    using const_reference   = const T&;
-    using difference_type   = int;
-public:
-    
-private:
-    pointer ptr_;
+template<typename KeyT>
+struct Node {
+    Node(KeyT key = 0, Node* parent = nullptr)
+    : key_ {key},
+      parent_ {parent} {};
+
+    ~Node() = default;
+/*--------------------------------------------------------------*/
+    KeyT key_;
+    Node* parent_, *left_, *right_;
+    int height_ {0} ;
 };
-} // <--- namespace yLAB
+
+} // <--- namespace graphics
 
 #endif
+

@@ -14,12 +14,11 @@ namespace yLAB {
 
 template<typename KeyT = int, typename Compare = std::less<KeyT>>
 class AVL_Tree final {
-    struct Node;
 
     using size_type       = std::size_t;
     using difference_type = int;
-    using pointer         = Node*;
-    using const_pointer   = const pointer;
+    using pointer         = Node<KeyT>*;
+    using const_pointer   = const Node<KeyT>*;
     
     static constexpr difference_type DIFF_HEIGHT = 2; // difference between two subtree heights
 
@@ -79,8 +78,8 @@ class AVL_Tree final {
 public:
 template <typename Iter>
     AVL_Tree(Iter begin, Iter end, const Compare& comp = Compare()): comp_ {comp} {
-        for (Iter iter = begin; iter != end; ++iter) {
-            insert(*iter);
+        for (; begin != end; ++begin) {
+            insert(*begin);
         }
     }
 
@@ -208,24 +207,12 @@ template <typename Iter>
     }
 
     void bypass_tree() const {
-        std::stack<Node> st;
+       // std::stack<> st;
     }
 
 private:
     pointer root_node_ {nullptr};
     Compare comp_;
-
-    struct Node {
-        Node(KeyT key = 0, pointer parent = nullptr)
-        : key_ {key},
-          parent_ {parent} {};
-
-        ~Node() = default;
-    /*--------------------------------------------------------------*/
-        KeyT key_;
-        pointer parent_ , left_ {nullptr}, right_ {nullptr};
-        int height_ {0};
-    };
 };
 
 
