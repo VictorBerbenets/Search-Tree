@@ -21,9 +21,9 @@ class tree_painter {
 std::string create_dir() {
     using namespace std::filesystem;
 
-    std::string relative_path = "..//include//";
+    std::string relative_path = "../include/";
     directory_entry resource_dir(relative_path.append(DIR_NAME));
-    relative_path.append("//");
+    relative_path.append("/");
     if (!resource_dir.is_directory()) {
         create_directory(relative_path);
     }
@@ -55,7 +55,7 @@ std::string create_dir() {
     void create_node(std::ofstream& graph_file, pointer elem, size_type curr_node) const {
         graph_file << "node" << curr_node << " [shape = Mrecord, style = filled, fillcolor = \"#FFD0D0\", label ="
                     "\"{address: "<< elem << "|key: "<< elem->key_ << "|height: "<< elem->height_ <<
-                    "| { <ptr1> left: "<< elem->left_ << "| <ptr2> right: " << elem->right_ << "|parent: " << elem->parent_ << "}}\"]\n";
+                    "| { <ptr1> left: " << elem->left_ << "| <ptr2> right: " << elem->right_ << "|parent: " << elem->parent_ << "}}\"]\n";
     }
 
     void create_next_graph_node(std::ofstream& graph_file, pointer elem, size_type curr_node,
@@ -72,6 +72,7 @@ std::string create_dir() {
         system_command.append(dir_path_ + dot_name);
         system_command.append(" -o ");
         system_command.append(dir_path_ + file_name.append(".png"));
+        std::cout << "command = " << system_command.c_str() << std::endl;
 
         system(system_command.c_str());
     }

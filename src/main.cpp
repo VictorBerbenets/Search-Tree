@@ -4,9 +4,11 @@
 
 int main() {
     yLAB::AVL_Tree<int> avl {};
-    for (int i = 0; i < 5; ++i) {
-        avl.insert(i % 10);
-    }
-    avl.graph_dump(); 
+    
+    avl.insert(0);
+    avl.insert(10);
+    avl.insert(40);
+
+    avl.graph_dump("main"); 
 }
 

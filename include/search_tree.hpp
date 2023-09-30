@@ -19,7 +19,7 @@ class AVL_Tree final {
     using difference_type = int;
     using pointer         = Node<KeyT>*;
     using const_pointer   = const Node<KeyT>*;
-    
+
     static constexpr difference_type DIFF_HEIGHT = 2; // difference between two subtree heights
 
     void right_turn(pointer pt) {
@@ -36,8 +36,13 @@ class AVL_Tree final {
             std::cout << "---------------------TREE BEFORE----------------------\n";
             print(ptr());
             std::cout << "------------------------------------------------------\n";
+        graph_dump("graph1");
         if (parent) {
             parent->left_ == pt ? parent->left_ : parent->right_ = pt->right_;
+            pt->right_->parent_ = parent;
+        } else {
+            root_node_ = pt->right_;
+            pt->right_->parent_ = nullptr;
         }
 
         auto tmp     = pt->right_;
@@ -49,9 +54,14 @@ class AVL_Tree final {
             }
         }
         tmp->left_   = pt;
-        tmp->parent_ = parent;
-        correct_height(tmp);
-        correct_height(pt);
+        /*if (parent) {
+            tmp->parent_ = parent;
+        } else {
+            tmp->parent_ = nullptr;
+        }*/
+        graph_dump("graph2");
+       // correct_height(tmp);
+        //correct_height(pt);
             std::cout << "---------------------TREE AFTER----------------------\n";
             print(ptr());
             std::cout << "------------------------------------------------------\n";
@@ -73,7 +83,7 @@ class AVL_Tree final {
         return res;
         //return (left ? left->height_ : 0) - (right ? right->height_ : 0);
     }
-    
+
     bool is_disbalance(difference_type diff) const noexcept { /*std::cout << "DIFF = " << diff << std::endl;*/ return diff == DIFF_HEIGHT; };
 public:
 template <typename Iter>
@@ -83,13 +93,12 @@ template <typename Iter>
         }
     }
 
-    AVL_Tree(std::initializer_list<KeyT> ls, const Compare& comp = Compare())
-    : AVL_Tree {ls.begin(), ls.end(), comp} {}
+    AVL_Tree(std::initializer_list<KeyT> ls, const Compare& comp = Compare()): AVL_Tree {ls.begin(), ls.end(), comp} {}
 
     AVL_Tree(const Compare& comp = Compare()) {
 
     }
-    
+
     ~AVL_Tree() {
         std::stack<pointer> ptrs_stack {};
         pointer curr = root_node_;
@@ -143,13 +152,21 @@ template <typename Iter>
     }
 
     void correct_height(pointer pt) {
-        size_type left_h  = height(pt->left_);
-        size_type right_h = height(pt->right_);
-        pt->height_ = (left_h > right_h ? left_h: right_h) + 1;
+        while(pt) {
+#if 0
+            std::cout << "pt     = " << pt << std::endl;
+            std::cout << "pt par = " << pt->parent_ << std::endl;
+            std::cout << "CORRECTING\n";
+#endif
+            size_type left_h  = height(pt->left_);
+            size_type right_h = height(pt->right_);
+            pt->height_ = (left_h > right_h ? left_h: right_h) + 1;
+            pt = pt->parent_;
+        }
     }
 
     void insert(const KeyT& key) {
-        std::cout << "KEY TO INSERT = " << key << std::endl;
+      //  std::cout << "KEY TO INSERT = " << key << std::endl;
         if (root_node_ == nullptr) {
             root_node_ = new Node {key};
             return;
@@ -159,30 +176,30 @@ template <typename Iter>
             if (comp_(key, curr_node->key_)) {
                 if (!curr_node->left_) { 
                     curr_node->left_ = new Node {key, curr_node};
-                    increase_heights(curr_node);
+                    correct_height(curr_node);
                     break; 
                 }
                 curr_node = curr_node->left_;
-            } else if (key == curr_node->key_) {
-                return ;
-            } else {
+            } 
+            else if (comp_(curr_node->key_, key)) {
                 if (!curr_node->right_) {
                     curr_node->right_ = new Node {key, curr_node};
-                    increase_heights(curr_node);
+                    correct_height(curr_node);
                     break;
                 }
                 curr_node = curr_node->right_;
             }
+            else { return ; }
         }
-        std::cout << "KEY TO BALANCE = " << curr_node->key_ << std::endl;
-        //balance_tree(curr_node);
+        // std::cout << "KEY TO BALANCE = " << curr_node->key_ << std::endl;
+        if (balance_tree(curr_node) != root_node_) {
+            std::cout << "Error" << std::endl;
+        }
     }
     
-    void balance_tree(pointer& pt) {
-        std::cout << "---CHECKING KEY        = " << pt->key_ << std::endl;
-        std::cout << "---CHECKING KEY HEIGHT = " << pt->height_ << std::endl;
+    pointer balance_tree(pointer pt) {
         while(pt) {
-            std::cout << "---CICLE KEY       = " << pt->key_ << std::endl;
+            std::cout << "---CICLE KEY           = " << pt->key_ << std::endl;
             std::cout << "---CHECKING KEY HEIGHT = " << pt->height_ << std::endl;
            // std::cout << "---PT BEFORE IF = " << pt << std::endl;
             if ( is_disbalance( height_difference(pt->right_, pt->left_) ) ) {
@@ -199,21 +216,23 @@ template <typename Iter>
                     right_turn(pt);
                 } else {
                     big_right_turn(pt);
-                } 
+                }
             }
            // std::cout << "---PT AFTER IF = " << pt << std::endl;
             pt = pt->parent_;
         }
+        return pt;
     }
 
     void bypass_tree() const {
        // std::stack<> st;
     }
-    
-    void graph_dump() const {
+
+    void graph_dump(const std::string& file_name = "graph.png") const {
        graphics::tree_painter<KeyT> graph {root_node_};
-       graph.graph_dump();
+       graph.graph_dump(file_name);
     }
+
 private:
     pointer root_node_ {nullptr};
     Compare comp_;
