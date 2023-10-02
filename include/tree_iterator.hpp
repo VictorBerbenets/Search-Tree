@@ -5,6 +5,8 @@
 
 namespace yLAB {
 
+namespace detail {
+
 template<typename KeyT>
 class TreeIterator {
 public:
@@ -28,15 +30,32 @@ public:
     TreeIterator operator++(int n) noexcept{
         if (ptr_->right_) {
             ptr_ = ptr_->right_;
-        } else if (ptr_->left_) {
-            ptr_ = ptr_->left__;
-        }
+            go_to_left_most_child();
         } else {
-            ptr_ = ptr_parent_;
+            go_upper();
         }
-
         return *this;
     }
+
+    void go_to_left_most_child() {
+        while(ptr_->left_) {
+            ptr_ = ptr_->left_;
+        }
+    }
+
+    void go_upper() {
+        while(ptr_) {
+            auto parent = ptr_->parent_;
+            if (parent == nullptr) { return ;}
+
+            if (parent->left_ == ptr_) {
+                ptr_ = parent;
+                break;
+            }
+            ptr_ = parent;
+        }
+    }
+
     TreeIterator operator--(int n) noexcept { ptr_--; return *this; }
     TreeIterator& operator++() noexcept { ++ptr_; return *this; }
     TreeIterator& operator--() noexcept { --ptr_; return *this; }
@@ -55,6 +74,8 @@ template<typename KeyT>
 bool operator==(TreeIterator<KeyT> lhs, TreeIterator<KeyT> rhs) noexcept {
     return lhs.get_pointer() == rhs.get_pointer();
 }
+
+} // <--- namespace detail
 
 } // <--- namespace yLAB
 

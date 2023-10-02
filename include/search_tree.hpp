@@ -14,14 +14,18 @@ namespace yLAB {
 
 template<typename KeyT = int, typename Compare = std::less<KeyT>>
 class AVL_Tree final {
-
+public:
     using size_type       = std::size_t;
     using difference_type = int;
-    using pointer         = Node<KeyT>*;
-    using const_pointer   = const Node<KeyT>*;
+    using node_type       = detail::Node<KeyT>;
+    using pointer         = detail::Node<KeyT>*;
+    using const_pointer   = const detail::Node<KeyT>*;
+
+    using iterator       = detail::TreeIterator<KeyT>;
+    using const_iterator = const iterator;
 
     static constexpr difference_type DIFF_HEIGHT = 2; // difference between two subtree heights
-
+private:
     void right_turn(pointer pt) {
 
     }
@@ -135,7 +139,7 @@ template <typename Iter>
     void insert(const KeyT& key) {
       //  std::cout << "KEY TO INSERT = " << key << std::endl;
         if (root_node_ == nullptr) {
-            root_node_ = new Node {key};
+            root_node_ = new node_type{key};
             return;
         }
 
@@ -143,7 +147,7 @@ template <typename Iter>
         while(curr_node) {
             if (comp_(key, curr_node->key_)) {
                 if (!curr_node->left_) {
-                    curr_node->left_ = new Node {key, curr_node};
+                    curr_node->left_ = new node_type{key, curr_node};
                     correct_height(curr_node);
                     break;
                 }
@@ -151,7 +155,7 @@ template <typename Iter>
             }
             else if (comp_(curr_node->key_, key)) {
                 if (!curr_node->right_) {
-                    curr_node->right_ = new Node {key, curr_node};
+                    curr_node->right_ = new node_type{key, curr_node};
                     correct_height(curr_node);
                     break;
                 }
@@ -200,6 +204,18 @@ template <typename Iter>
        graphics::tree_painter<KeyT> graph {root_node_};
        graph.graph_dump(file_name);
     }
+    
+    pointer get_most_left() const noexcept {
+        if (root_node_ == nullptr) { return nullptr; };
+        auto tmp = root_node_;
+        while(true) {
+            if (tmp->left_ == nullptr) { return tmp; }
+            tmp = tmp->left_;
+        }
+    }
+
+    iterator begin() noexcept { return iterator{get_most_left()};}
+    iterator end() noexcept { return nullptr; }  
 
 private:
     pointer root_node_ {nullptr};

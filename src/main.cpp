@@ -3,9 +3,13 @@
 #include "search_tree.hpp"
 
 int main() {
-    yLAB::AVL_Tree<int> avl {};
-    
+    yLAB::AVL_Tree<int> avl({1, 2, 3});
+
     avl.insert(0);
+    for (auto begin = avl.begin(); begin != avl.end(); begin++) {
+        std::cout << begin->key_ << std::endl;
+    }
+    /*
     avl.insert(-1);
     avl.insert(10);
     avl.insert(40);
@@ -13,7 +17,7 @@ int main() {
     avl.insert(500);
     avl.insert(700);
     avl.insert(1000);
-
-    avl.graph_dump("main"); 
+*/
+    avl.graph_dump("main");
 }
 

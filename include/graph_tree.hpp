@@ -12,7 +12,7 @@ namespace graphics {
 template<typename NodeKeyT>
 class tree_painter {
     using size_type  = std::size_t;
-    using pointer    = yLAB::Node<NodeKeyT>*;
+    using pointer    = yLAB::detail::Node<NodeKeyT>*;
 
     enum class Nodes : char { Left = 1, Right = 2 };
 
