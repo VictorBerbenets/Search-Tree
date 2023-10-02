@@ -4,9 +4,9 @@
 #include <iostream>
 #include <utility>
 #include <memory>
-#include <stack>
 #include <initializer_list>
 
+#include "tree_iterator.hpp"
 #include "node.hpp"
 #include "graph_tree.hpp"
 
@@ -34,7 +34,7 @@ class AVL_Tree final {
         auto& parent = pt->parent_;
         graph_dump("graph1");
         if (parent) {
-            parent->left_ == pt ? parent->left_ : parent->right_ = pt->right_;
+            (parent->left_ == pt ? parent->left_ : parent->right_) = pt->right_;
             pt->right_->parent_ = parent;
         } else {
             root_node_ = pt->right_;
@@ -58,7 +58,7 @@ class AVL_Tree final {
     void big_left_turn(pointer pt) {
 
     }
-    
+
     difference_type height_difference(const_pointer left, const_pointer right) const noexcept {
         auto res = (left ? (left->height_ + 1) : 0) - (right ? (right->height_ + 1) : 0);
         return res;
@@ -80,36 +80,23 @@ template <typename Iter>
     }
 
     ~AVL_Tree() {
-        std::stack<pointer> ptrs_stack {};
-        pointer curr = root_node_;
-        pointer prev {};
-        while(curr || !ptrs_stack.empty()) {
-            if (curr) {
-                ptrs_stack.push(curr);
-                curr = curr->left_;
+        for (pointer curr_node = root_node_, tmp{0}; curr_node; curr_node = tmp) {
+            if (!curr_node->left_) {
+                tmp = curr_node->right_;
+                delete curr_node;
             } else {
-                curr = ptrs_stack.top();
-                if (!curr->right_ || curr->right_ == prev) {
-                    delete curr;
-                    ptrs_stack.pop();
-                    prev = curr;
-                    curr = nullptr;
-                } else {
-                    curr = curr->right_;
-                }
+                tmp = curr_node->left_;
+                curr_node->left_ = tmp->right_;
+                tmp->right_ = curr_node;
             }
         }
     }
-    
-    const_pointer ptr() const noexcept { return root_node_; };
-    
-    void Graph_dump() {
-        
-    }
+
+    const_pointer root_node() const noexcept { return root_node_; };
 
     void print(const_pointer pt) {
         if (!pt) { return; }
-        
+
         std::cout << "key = " << pt->key_ << std::endl;
         std::cout << "height = " << pt->height_ << std::endl;
 
@@ -151,16 +138,17 @@ template <typename Iter>
             root_node_ = new Node {key};
             return;
         }
+
         auto curr_node = root_node_;
         while(curr_node) {
             if (comp_(key, curr_node->key_)) {
-                if (!curr_node->left_) { 
+                if (!curr_node->left_) {
                     curr_node->left_ = new Node {key, curr_node};
                     correct_height(curr_node);
-                    break; 
+                    break;
                 }
                 curr_node = curr_node->left_;
-            } 
+            }
             else if (comp_(curr_node->key_, key)) {
                 if (!curr_node->right_) {
                     curr_node->right_ = new Node {key, curr_node};
@@ -172,12 +160,14 @@ template <typename Iter>
             else { return ; }
         }
         // std::cout << "KEY TO BALANCE = " << curr_node->key_ << std::endl;
-        /*if (balance_tree(curr_node) != root_node_) {
+#if 0
+        if (balance_tree(curr_node) != root_node_) {
             std::cout << "Error" << std::endl;
             std::cout << "ROOT KEY = " << root_node_->key_ << std::endl;
-        }*/
+        }
+#endif
     }
-    
+
     pointer balance_tree(pointer pt) {
         while(pt) {
             std::cout << "---CICLE KEY           = " << pt->key_ << std::endl;

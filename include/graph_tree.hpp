@@ -13,7 +13,7 @@ template<typename NodeKeyT>
 class tree_painter {
     using size_type  = std::size_t;
     using pointer    = yLAB::Node<NodeKeyT>*;
-    
+
     enum class Nodes : char { Left = 1, Right = 2 };
 
     const std::string DIR_NAME = "data";
@@ -36,7 +36,7 @@ std::string create_dir() {
 
     template<typename... Args>
     void graph_print(std::ofstream& graph_file, Args&&... args) {
-        
+
     }
 
     void set_graph(std::ofstream& graph_file, const char* flcol = "lightgreen", float rksep = 1.3,
@@ -45,7 +45,7 @@ std::string create_dir() {
                    ", nodesep = " << nodesep << ", style = \"" << style << "\", color = " <<
                    color << ", penwidth = " << pnwidth << "];\n";
     }
-    
+
     void set_edge(std::ofstream& graph_file, const char* color = "black", const char* arrowhead = "diamond",
                   float arrow_sz = 1.0, float pnwidth = 1.2) const {
         graph_file << "edge [color = " << color << ", arrowhead = " << arrowhead << ", arrowsize = "
@@ -66,7 +66,7 @@ std::string create_dir() {
                    << next_node << "; ";
         ++next_node;
     }
-    
+
     void create_png_graph(const std::string& dot_name, std::string file_name) const {
         std::string system_command = "dot -Tpng ";
         system_command.append(dir_path_ + dot_name);
@@ -98,7 +98,7 @@ public:
 
         std::queue<pointer> nodes_queue {};
         nodes_queue.push(root_ptr_);
-        
+
         size_type curr_node {1};
         size_type next_node {2};
         while(nodes_queue.size()) {
