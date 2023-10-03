@@ -21,6 +21,17 @@ struct Node {
     int height_ {0};
 };
 
+template<typename KeyT>
+struct EndNode: private Node<KeyT> {
+    explicit EndNode(Node<KeyT>* root)
+    : root_node_ {root} {}
+
+    EndNode() = default;
+
+    Node<KeyT>* root_node_;    
+};
+
+
 } // <--- namespace detail
 
 } // <--- namespace graphics

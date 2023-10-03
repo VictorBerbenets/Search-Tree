@@ -14,18 +14,17 @@ namespace yLAB {
 
 template<typename KeyT = int, typename Compare = std::less<KeyT>>
 class AVL_Tree final {
-public:
     using size_type       = std::size_t;
     using difference_type = int;
     using node_type       = detail::Node<KeyT>;
     using pointer         = detail::Node<KeyT>*;
+    using end_pointer     = detail::EndNode<KeyT>;
     using const_pointer   = const detail::Node<KeyT>*;
-
     using iterator       = detail::TreeIterator<KeyT>;
     using const_iterator = const iterator;
 
     static constexpr difference_type DIFF_HEIGHT = 2; // difference between two subtree heights
-private:
+
     void right_turn(pointer pt) {
 
     }
@@ -71,7 +70,8 @@ private:
     bool is_disbalance(difference_type diff) const noexcept { /*std::cout << "DIFF = " << diff << std::endl;*/ return diff == DIFF_HEIGHT; };
 public:
 template <typename Iter>
-    AVL_Tree(Iter begin, Iter end, const Compare& comp = Compare()): comp_ {comp} {
+    AVL_Tree(Iter begin, Iter end, const Compare& comp = Compare())
+    : comp_ {comp} {
         for (; begin != end; ++begin) {
             insert(*begin);
         }

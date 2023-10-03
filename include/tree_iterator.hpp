@@ -30,11 +30,18 @@ public:
     TreeIterator operator++(int n) noexcept{
         if (ptr_->right_) {
             ptr_ = ptr_->right_;
-            go_to_left_most_child();
+            while(ptr_->left_) {
+                ptr_ = ptr_->left_;
+            }
         } else {
-            go_upper();
-        }
-        return *this;
+            auto tmp = ptr_->parent_;
+            while(ptr_ == tmp->right_) {
+                tmp = tmp->parent_;
+            }
+            if (ptr_->right_ != tmp) {
+                ptr_ = tmp;
+            }
+        }   
     }
 
     void go_to_left_most_child() {
@@ -49,7 +56,7 @@ public:
             if (parent == nullptr) { return ;}
 
             if (parent->left_ == ptr_) {
-                ptr_ = parent;
+               // ptr_ = parent;
                 break;
             }
             ptr_ = parent;

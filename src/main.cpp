@@ -6,9 +6,11 @@ int main() {
     yLAB::AVL_Tree<int> avl({1, 2, 3});
 
     avl.insert(0);
+    avl.graph_dump("main");
     for (auto begin = avl.begin(); begin != avl.end(); begin++) {
         std::cout << begin->key_ << std::endl;
     }
+    std::cout << "BOOL = " << (nullptr == nullptr) << std::endl;
     /*
     avl.insert(-1);
     avl.insert(10);
@@ -18,6 +20,5 @@ int main() {
     avl.insert(700);
     avl.insert(1000);
 */
-    avl.graph_dump("main");
 }
 
