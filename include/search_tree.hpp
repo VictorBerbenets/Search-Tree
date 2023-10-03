@@ -14,14 +14,17 @@ namespace yLAB {
 
 template<typename KeyT = int, typename Compare = std::less<KeyT>>
 class AVL_Tree final {
+public:
+    using iterator       = detail::TreeIterator<KeyT>;
+    using const_iterator = const iterator;
+private:
     using size_type       = std::size_t;
     using difference_type = int;
     using node_type       = detail::Node<KeyT>;
+    using end_node        = detail::EndNode<KeyT>;
     using pointer         = detail::Node<KeyT>*;
-    using end_pointer     = detail::EndNode<KeyT>;
+    using end_pointer     = detail::EndNode<KeyT>*;
     using const_pointer   = const detail::Node<KeyT>*;
-    using iterator       = detail::TreeIterator<KeyT>;
-    using const_iterator = const iterator;
 
     static constexpr difference_type DIFF_HEIGHT = 2; // difference between two subtree heights
 
@@ -138,8 +141,11 @@ template <typename Iter>
 
     void insert(const KeyT& key) {
       //  std::cout << "KEY TO INSERT = " << key << std::endl;
+        ++size_;
         if (root_node_ == nullptr) {
             root_node_ = new node_type{key};
+            end_node_  = new end_node{root_node_};
+            root_node_->parent_ = end_node_;
             return;
         }
 
@@ -161,7 +167,10 @@ template <typename Iter>
                 }
                 curr_node = curr_node->right_;
             }
-            else { return ; }
+            else {
+                --size_;
+                return ;
+            }
         }
         // std::cout << "KEY TO BALANCE = " << curr_node->key_ << std::endl;
 #if 0
@@ -204,7 +213,7 @@ template <typename Iter>
        graphics::tree_painter<KeyT> graph {root_node_};
        graph.graph_dump(file_name);
     }
-    
+
     pointer get_most_left() const noexcept {
         if (root_node_ == nullptr) { return nullptr; };
         auto tmp = root_node_;
@@ -214,12 +223,18 @@ template <typename Iter>
         }
     }
 
+    size_type size() const noexcept { return size_; };
+
     iterator begin() noexcept { return iterator{get_most_left()};}
-    iterator end() noexcept { return nullptr; }  
+    const_iterator begin() const noexcept { return iterator{get_most_left()}; }
+    iterator end() noexcept { return end_node_; }
+    const_iterator end() const noexcept { return end_node_; }
 
 private:
     pointer root_node_ {nullptr};
+    end_pointer end_node_ {nullptr};
     Compare comp_;
+    size_type size_;
 };
 
 

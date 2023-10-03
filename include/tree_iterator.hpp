@@ -29,10 +29,7 @@ public:
 
     TreeIterator operator++(int n) noexcept{
         if (ptr_->right_) {
-            ptr_ = ptr_->right_;
-            while(ptr_->left_) {
-                ptr_ = ptr_->left_;
-            }
+            go_to_left_most_child();
         } else {
             auto tmp = ptr_->parent_;
             while(ptr_ == tmp->right_) {
@@ -45,6 +42,7 @@ public:
     }
 
     void go_to_left_most_child() {
+        ptr_ = ptr_->right_;
         while(ptr_->left_) {
             ptr_ = ptr_->left_;
         }
@@ -67,9 +65,9 @@ public:
     TreeIterator& operator++() noexcept { ++ptr_; return *this; }
     TreeIterator& operator--() noexcept { --ptr_; return *this; }
 
-    const_reference operator*() const noexcept { return *ptr_; }
+    //const_reference operator*() const noexcept { return ptr_->key_; }
     const_pointer operator->() const noexcept { return ptr_; }
-    reference operator*() noexcept { return *ptr_; }
+    //reference operator*() noexcept { return ptr_->key_; }
     pointer operator->() noexcept { return ptr_; }
 
 

@@ -22,9 +22,10 @@ struct Node {
 };
 
 template<typename KeyT>
-struct EndNode: private Node<KeyT> {
+struct EndNode: public Node<KeyT> {
     explicit EndNode(Node<KeyT>* root)
-    : root_node_ {root} {}
+    :   Node<KeyT>{0},
+        root_node_ {root} {}
 
     EndNode() = default;
 
