@@ -28,37 +28,16 @@ public:
     const_pointer get_pointer() const noexcept { return ptr_; }
 
     TreeIterator operator++(int n) noexcept{
-        if (ptr_->right_) {
-            go_to_left_most_child();
+        if (ptr_ == nullptr) {
+            return {nullptr};
         } else {
-            auto tmp = ptr_->parent_;
-            while(ptr_ == tmp->right_) {
-                tmp = tmp->parent_;
+            if (ptr_->right_) {
+                go_to_most_left();
+            } else {
+                go_upper();
             }
-            if (ptr_->right_ != tmp) {
-                ptr_ = tmp;
-            }
-        }   
-    }
-
-    void go_to_left_most_child() {
-        ptr_ = ptr_->right_;
-        while(ptr_->left_) {
-            ptr_ = ptr_->left_;
         }
-    }
-
-    void go_upper() {
-        while(ptr_) {
-            auto parent = ptr_->parent_;
-            if (parent == nullptr) { return ;}
-
-            if (parent->left_ == ptr_) {
-               // ptr_ = parent;
-                break;
-            }
-            ptr_ = parent;
-        }
+        return {ptr_};
     }
 
     TreeIterator operator--(int n) noexcept { ptr_--; return *this; }
@@ -70,8 +49,27 @@ public:
     //reference operator*() noexcept { return ptr_->key_; }
     pointer operator->() noexcept { return ptr_; }
 
-
 private:
+
+    void go_to_most_left() {
+        ptr_ = ptr_->right_;
+        while(ptr_->left_) {
+            ptr_ = ptr_->left_;
+        }
+    }
+
+    void go_upper() {
+        auto tmp = ptr_->parent_;
+        while(ptr_ == tmp->right_) {
+            tmp = tmp->parent_;
+        }
+        if (ptr_->right_ != tmp) {
+            ptr_ = tmp;
+        }
+    }
+/*-----------------------------------------------------------*/
+    template<typename T, typename Comporator>
+    friend class AVL_Tree;
     pointer ptr_;
 }; // <--- class TreeIterator
 
