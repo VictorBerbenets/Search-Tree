@@ -1,6 +1,9 @@
 #ifndef TREE_ITERATOR_
 #define TREE_ITERATOR_
 
+#include <iterator>
+#include <utility>
+
 #include "node.hpp"
 
 namespace yLAB {
@@ -14,8 +17,8 @@ public:
     using value_type        = Node<KeyT>;
     using pointer           = value_type*;
     using reference         = value_type&;
-    using const_pointer     = const Node<KeyT>*;
-    using const_reference   = const Node<KeyT>&;
+    using const_pointer     = const value_type*;
+    using const_reference   = const value_type&;
     using difference_type   = int;
 
     TreeIterator(pointer ptr = nullptr) noexcept
@@ -29,7 +32,6 @@ public:
 
     TreeIterator& operator++() noexcept{
         if (ptr_ == nullptr) {
-            ptr_ = nullptr;
             return *this;
         } else {
             if (ptr_->right_) {
@@ -43,7 +45,6 @@ public:
 
     TreeIterator& operator--() noexcept {
         if (ptr_ == nullptr) {
-            ptr_ = nullptr;
             return *this;
         } else {
             if (ptr_->left_) {
@@ -68,10 +69,7 @@ public:
     }
 
     KeyT operator*() const noexcept { return ptr_->key_; }
-    const_pointer operator->() const noexcept { return ptr_; }
-    KeyT& operator*() noexcept { return ptr_->key_; }
-    pointer operator->() noexcept { return ptr_; }
-
+    const KeyT* operator->() const noexcept { return &(ptr_->key_); }
 private:
 
     void go_to_most_left() {
