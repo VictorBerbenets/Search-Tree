@@ -24,7 +24,7 @@ struct Node {
 template<typename KeyT>
 struct EndNode: public Node<KeyT> {
     explicit EndNode(Node<KeyT>* root)
-    :   Node<KeyT>{0},
+    :   Node<KeyT>{-777},
         root_node_ {root} {}
 
     EndNode() = default;

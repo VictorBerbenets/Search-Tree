@@ -216,7 +216,7 @@ template <typename Iter>
     }
 
     pointer get_most_left() const noexcept {
-        if (root_node_ == nullptr) { return nullptr; };
+        if (root_node_ == nullptr) { return end_node_; };
         auto tmp = root_node_;
         while(true) {
             if (tmp->left_ == nullptr) { return tmp; }
@@ -228,7 +228,7 @@ template <typename Iter>
 
     iterator begin() noexcept { return iterator{get_most_left()};}
     const_iterator begin() const noexcept { return begin(); }
-    iterator end() noexcept { return end_node_; }
+    iterator end() noexcept { return iterator{end_node_}; }
     const_iterator end() const noexcept { return end(); }
 
 private:

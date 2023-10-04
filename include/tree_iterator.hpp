@@ -1,5 +1,5 @@
-#ifndef JUST_COOL_NODE_
-#define JUST_COOL_NODE_
+#ifndef TREE_ITERATOR_
+#define TREE_ITERATOR_
 
 #include "node.hpp"
 
@@ -27,26 +27,49 @@ public:
 
     const_pointer get_pointer() const noexcept { return ptr_; }
 
-    TreeIterator operator++(int n) noexcept{
+    TreeIterator& operator++() noexcept{
         if (ptr_ == nullptr) {
-            return {nullptr};
+            ptr_ = nullptr;
+            return *this;
         } else {
             if (ptr_->right_) {
                 go_to_most_left();
             } else {
-                go_upper();
+                go_upper_inc();
             }
         }
-        return {ptr_};
+        return *this;
     }
 
-    TreeIterator operator--(int n) noexcept { ptr_--; return *this; }
-    TreeIterator& operator++() noexcept { return *this++; }
-    TreeIterator& operator--() noexcept { --ptr_; return *this; }
+    TreeIterator& operator--() noexcept {
+        if (ptr_ == nullptr) {
+            ptr_ = nullptr;
+            return *this;
+        } else {
+            if (ptr_->left_) {
+                go_to_most_right();
+            } else {
+                go_upper_dec();
+            }
+        }
+        return *this;
+    }
 
-    const_reference operator*() const noexcept { return *ptr_; }
+    TreeIterator operator++(int n) noexcept {
+        auto tmp = *this;
+        ++(*this);
+        return tmp;
+    }
+
+    TreeIterator operator--(int n) noexcept {
+        auto tmp = *this;
+        --(*this);
+        return tmp;
+    }
+
+    KeyT operator*() const noexcept { return ptr_->key_; }
     const_pointer operator->() const noexcept { return ptr_; }
-    reference operator*() noexcept { return *ptr_; }
+    KeyT& operator*() noexcept { return ptr_->key_; }
     pointer operator->() noexcept { return ptr_; }
 
 private:
@@ -58,15 +81,33 @@ private:
         }
     }
 
-    void go_upper() {
+    void go_to_most_right() {
+        ptr_ = ptr_->left_;
+        while(ptr_->right_) {
+            ptr_ = ptr_->right_;
+        }
+    }
+
+    void go_upper_dec() {
+        auto tmp = ptr_->parent_;
+        while(ptr_ == tmp->left_) {
+            ptr_ = std::exchange(tmp, tmp->parent_);
+        }
+        if (ptr_->left_ != tmp) {
+            ptr_ = tmp;
+        }
+        std::cout << "KEY = " << ptr_->key_ << std::endl;
+    }
+
+    void go_upper_inc() {
         auto tmp = ptr_->parent_;
         while(ptr_ == tmp->right_) {
-            ptr_ = tmp;
-            tmp  = tmp->parent_;
+            ptr_ = std::exchange(tmp, tmp->parent_);
         }
         if (ptr_->right_ != tmp) {
             ptr_ = tmp;
         }
+        std::cout << "KEY = " << ptr_->key_ << std::endl;
     }
 /*------------------------------------------------------------------*/
     template<typename T, typename Comporator>
