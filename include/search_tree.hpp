@@ -227,9 +227,9 @@ template <typename Iter>
     size_type size() const noexcept { return size_; };
 
     iterator begin() noexcept { return iterator{get_most_left()};}
-    const_iterator begin() const noexcept { return begin(); }
+    const_iterator cbegin() const noexcept { return iterator{get_most_left()}; }
     iterator end() noexcept { return iterator{end_node_}; }
-    const_iterator end() const noexcept { return end(); }
+    const_iterator cend() const noexcept { return iterator{end_node_}; }
 
 private:
     pointer root_node_ {nullptr};

@@ -3,6 +3,7 @@
 
 #include <iterator>
 #include <utility>
+#include <memory>
 
 #include "node.hpp"
 
@@ -69,7 +70,7 @@ public:
     }
 
     KeyT operator*() const noexcept { return ptr_->key_; }
-    const KeyT* operator->() const noexcept { return &(ptr_->key_); }
+    const KeyT* operator->() const noexcept { return std::addressof(ptr_->key_); }
 private:
 
     void go_to_most_left() {
