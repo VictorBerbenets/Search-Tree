@@ -44,7 +44,7 @@ private:
     }
 
     pointer left_turn(pointer pt) {
-        auto& parent = pt->parent_;
+        auto parent = pt->parent_;
         graph_dump("graph1");
         if (parent) {
             (parent->left_ == pt ? parent->left_ : parent->right_) = pt->right_;
@@ -55,8 +55,8 @@ private:
         }
 
         auto tmp     = pt->right_;
-        pt->parent_  = pt->right_;
-        pt->right_   = pt->right_->left_;
+        pt->parent_  = tmp;
+        pt->right_   = tmp->left_;
         if (pt->right_) {
             if (pt->right_->left_) {
                 pt->right_->left_->parent_ = pt;

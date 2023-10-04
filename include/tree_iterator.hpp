@@ -4,6 +4,7 @@
 #include <iterator>
 #include <utility>
 #include <memory>
+#include <cstddef>
 
 #include "node.hpp"
 
@@ -20,7 +21,7 @@ public:
     using reference         = value_type&;
     using const_pointer     = const value_type*;
     using const_reference   = const value_type&;
-    using difference_type   = int;
+    using difference_type   = std::ptrdiff_t;
 
     TreeIterator(pointer ptr = nullptr) noexcept
         : ptr_ {ptr},
@@ -129,7 +130,7 @@ private:
 /*------------------------------------------------------------------*/
     template<typename T, typename Comp>
     friend class AVL_Tree;
-    
+
     pointer ptr_;
     pointer end_node_;
 }; // <--- class TreeIterator

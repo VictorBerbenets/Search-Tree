@@ -9,7 +9,7 @@ int main() {
 
     std::advance(it, 5);
     avl.graph_dump("main");
-    for (auto it2 = std::prev(avl.end()); it != avl.begin(); --it) {
+    for ( ; it != avl.begin(); --it) {
         std::cout << "ITER = " << *it << std::endl;
     }
 #if 0
