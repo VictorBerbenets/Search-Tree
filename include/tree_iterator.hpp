@@ -41,12 +41,12 @@ public:
     }
 
     TreeIterator operator--(int n) noexcept { ptr_--; return *this; }
-    TreeIterator& operator++() noexcept { ++ptr_; return *this; }
+    TreeIterator& operator++() noexcept { return *this++; }
     TreeIterator& operator--() noexcept { --ptr_; return *this; }
 
-    //const_reference operator*() const noexcept { return ptr_->key_; }
+    const_reference operator*() const noexcept { return *ptr_; }
     const_pointer operator->() const noexcept { return ptr_; }
-    //reference operator*() noexcept { return ptr_->key_; }
+    reference operator*() noexcept { return *ptr_; }
     pointer operator->() noexcept { return ptr_; }
 
 private:
@@ -61,15 +61,17 @@ private:
     void go_upper() {
         auto tmp = ptr_->parent_;
         while(ptr_ == tmp->right_) {
-            tmp = tmp->parent_;
+            ptr_ = tmp;
+            tmp  = tmp->parent_;
         }
         if (ptr_->right_ != tmp) {
             ptr_ = tmp;
         }
     }
-/*-----------------------------------------------------------*/
+/*------------------------------------------------------------------*/
     template<typename T, typename Comporator>
     friend class AVL_Tree;
+
     pointer ptr_;
 }; // <--- class TreeIterator
 

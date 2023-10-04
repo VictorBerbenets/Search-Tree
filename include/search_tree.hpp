@@ -97,6 +97,7 @@ template <typename Iter>
                 tmp->right_ = curr_node;
             }
         }
+        delete end_node_;
     }
 
     const_pointer root_node() const noexcept { return root_node_; };
@@ -226,9 +227,9 @@ template <typename Iter>
     size_type size() const noexcept { return size_; };
 
     iterator begin() noexcept { return iterator{get_most_left()};}
-    const_iterator begin() const noexcept { return iterator{get_most_left()}; }
+    const_iterator begin() const noexcept { return begin(); }
     iterator end() noexcept { return end_node_; }
-    const_iterator end() const noexcept { return end_node_; }
+    const_iterator end() const noexcept { return end(); }
 
 private:
     pointer root_node_ {nullptr};

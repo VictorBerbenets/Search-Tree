@@ -83,6 +83,10 @@ public:
       dir_path_ {create_dir()} {}
 
     void graph_dump(const std::string& file_name = "graph") const {
+        if (!root_ptr_) {
+            std::cout << "Tree is empty" << std::endl;
+            return ;
+        }
         std::string dot_name = file_name;
         std::string dot_file = dir_path_ +  dot_name.append(".dot");
         std::ofstream graph_file {dot_file};
