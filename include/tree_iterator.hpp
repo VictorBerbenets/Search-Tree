@@ -44,19 +44,11 @@ public:
 
     TreeIterator& operator--() noexcept {
         if (ptr_ == end_node_) {
-//            std::cout << "END NODE = " << end_node_->key_ << std::endl;
             auto real_end = static_cast<EndNode<KeyT>*>(end_node_);
             ptr_ = real_end->root_node_;
             go_to_most_right();
-#if 0
-            while(ptr_->right_) {
-                ptr_ = ptr_->right_;
-            }
-#endif
-            std::cout << "ROOT KEY = " << ptr_->key_ << std::endl;
             return *this;
         }
-
         if (ptr_ == nullptr) {
             return *this;
         } else {
@@ -128,9 +120,6 @@ private:
         return res;
     }
 /*------------------------------------------------------------------*/
-    template<typename T, typename Comp>
-    friend class AVL_Tree;
-
     pointer ptr_;
     pointer end_node_;
 }; // <--- class TreeIterator
