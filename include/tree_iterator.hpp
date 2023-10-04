@@ -11,7 +11,7 @@ namespace yLAB {
 
 namespace detail {
 
-template<typename KeyT>
+template<typename KeyT, typename Comporator = std::less<KeyT>>
 class TreeIterator {
 public:
     using iterator_category = std::bidirectional_iterator_tag;
@@ -23,11 +23,8 @@ public:
     using difference_type   = int;
 
     TreeIterator(pointer ptr = nullptr) noexcept
-        : ptr_ {ptr} {}
-
-    TreeIterator(const TreeIterator& rhs) = default;
-
-    ~TreeIterator() = default;
+        : ptr_ {ptr},
+          end_node_ {find_end_node()} {}
 
     const_pointer get_pointer() const noexcept { return ptr_; }
 
@@ -45,6 +42,20 @@ public:
     }
 
     TreeIterator& operator--() noexcept {
+        if (ptr_ == end_node_) {
+//            std::cout << "END NODE = " << end_node_->key_ << std::endl;
+            auto real_end = static_cast<EndNode<KeyT>*>(end_node_);
+            ptr_ = real_end->root_node_;
+            go_to_most_right();
+#if 0
+            while(ptr_->right_) {
+                ptr_ = ptr_->right_;
+            }
+#endif
+            std::cout << "ROOT KEY = " << ptr_->key_ << std::endl;
+            return *this;
+        }
+
         if (ptr_ == nullptr) {
             return *this;
         } else {
@@ -95,7 +106,6 @@ private:
         if (ptr_->left_ != tmp) {
             ptr_ = tmp;
         }
-        std::cout << "KEY = " << ptr_->key_ << std::endl;
     }
 
     void go_upper_inc() {
@@ -106,13 +116,22 @@ private:
         if (ptr_->right_ != tmp) {
             ptr_ = tmp;
         }
-        std::cout << "KEY = " << ptr_->key_ << std::endl;
+    }
+
+    pointer find_end_node() {
+        if (ptr_ == nullptr) { return nullptr; }
+        auto res = ptr_;
+        while(res->parent_) {
+            res = res->parent_;
+        }
+        return res;
     }
 /*------------------------------------------------------------------*/
-    template<typename T, typename Comporator>
+    template<typename T, typename Comp>
     friend class AVL_Tree;
-
+    
     pointer ptr_;
+    pointer end_node_;
 }; // <--- class TreeIterator
 
 template<typename KeyT>

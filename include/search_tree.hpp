@@ -5,6 +5,7 @@
 #include <utility>
 #include <memory>
 #include <initializer_list>
+#include <cstddef>
 
 #include "tree_iterator.hpp"
 #include "node.hpp"
@@ -15,16 +16,22 @@ namespace yLAB {
 template<typename KeyT = int, typename Compare = std::less<KeyT>>
 class AVL_Tree final {
 public:
-    using iterator       = detail::TreeIterator<KeyT>;
-    using const_iterator = const iterator;
-private:
+    using key_type        = KeyT;
+    using value_type      = KeyT;
     using size_type       = std::size_t;
-    using difference_type = int;
-    using node_type       = detail::Node<KeyT>;
-    using end_node        = detail::EndNode<KeyT>;
+    using difference_type = std::ptrdiff_t;
+    using key_compare     = Compare;
+    using value_compare   = Compare;
+    using reference       = value_type&;
+    using const_reference = const value_type&;
     using pointer         = detail::Node<KeyT>*;
-    using end_pointer     = detail::EndNode<KeyT>*;
     using const_pointer   = const detail::Node<KeyT>*;
+    using iterator        = detail::TreeIterator<KeyT>;
+    using const_iterator  = const iterator;
+    using node_type       = detail::Node<KeyT>;
+private:
+    using end_node        = detail::EndNode<KeyT>;
+    using end_pointer     = detail::EndNode<KeyT>*;
 
     static constexpr difference_type DIFF_HEIGHT = 2; // difference between two subtree heights
 
@@ -74,7 +81,8 @@ private:
 public:
 template <typename Iter>
     AVL_Tree(Iter begin, Iter end, const Compare& comp = Compare())
-    : comp_ {comp} {
+    : end_node_ {new end_node{nullptr}},
+      comp_ {comp} {
         for (; begin != end; ++begin) {
             insert(*begin);
         }
@@ -128,11 +136,6 @@ template <typename Iter>
 
     void correct_height(pointer pt) {
         while(pt) {
-#if 0
-            std::cout << "pt     = " << pt << std::endl;
-            std::cout << "pt par = " << pt->parent_ << std::endl;
-            std::cout << "CORRECTING\n";
-#endif
             size_type left_h  = height(pt->left_);
             size_type right_h = height(pt->right_);
             pt->height_ = std::max(left_h, right_h) + 1;
@@ -141,11 +144,10 @@ template <typename Iter>
     }
 
     void insert(const KeyT& key) {
-      //  std::cout << "KEY TO INSERT = " << key << std::endl;
         ++size_;
         if (root_node_ == nullptr) {
             root_node_ = new node_type{key};
-            end_node_  = new end_node{root_node_};
+            end_node_->root_node_ = root_node_;
             root_node_->parent_ = end_node_;
             return;
         }
@@ -184,12 +186,8 @@ template <typename Iter>
 
     pointer balance_tree(pointer pt) {
         while(pt) {
-            std::cout << "---CICLE KEY           = " << pt->key_ << std::endl;
-            std::cout << "---CHECKING KEY HEIGHT = " << pt->height_ << std::endl;
             if ( is_disbalance( height_difference(pt->right_, pt->left_) ) ) {
-                std::cout << "IS DISBALANCE ON KEY = " << pt->key_ << std::endl;
                 if (height_difference(pt->right_->right_, pt->right_->left_) >= 0) {
-                    std::cout << "LEFT TURN\n";
                     pt = left_turn(pt);
                 } else {
                     big_left_turn(pt);
@@ -204,10 +202,6 @@ template <typename Iter>
             pt = pt->parent_;
         }
         return pt;
-    }
-
-    void bypass_tree() const {
-       // std::stack<> st;
     }
 
     void graph_dump(const std::string& file_name = "graph.png") const {
