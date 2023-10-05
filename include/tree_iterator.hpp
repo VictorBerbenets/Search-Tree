@@ -12,7 +12,7 @@ namespace yLAB {
 
 namespace detail {
 
-template<typename KeyT, typename Comporator = std::less<KeyT>>
+template<typename KeyT>
 class TreeIterator {
 public:
     using iterator_category = std::bidirectional_iterator_tag;
