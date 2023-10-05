@@ -23,7 +23,7 @@ public:
     using difference_type   = std::ptrdiff_t;
 
     TreeIterator(const_pointer ptr) noexcept
-        : ptr_ {ptr} {}
+    : ptr_ {ptr} {}
 
     const_pointer get_pointer() const noexcept { return ptr_; }
 
@@ -33,7 +33,7 @@ public:
     }
 
     TreeIterator& operator--() noexcept {
-        ptr_ = ptr_->predicessor();
+        ptr_ = ptr_->predecessor();
         return *this;
     }
 

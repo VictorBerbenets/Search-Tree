@@ -125,7 +125,7 @@ public:
                 return ;
             }
         }
-        begin_node_ = get_most_left(root_node_);
+        begin_node_ = get_most_left(begin_node_);
         // std::cout << "KEY TO BALANCE = " << curr_node->key_ << std::endl;
 #if 0
         if (balance_tree(curr_node) != root_node_) {
@@ -248,7 +248,7 @@ private:
     pointer begin_node_ {std::addressof(end_node_)};
     Compare comp_;
     size_type size_;
-};
+}; // <--- class AVL_Tree
 
 } // <--- namespace yLAB
 

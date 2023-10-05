@@ -17,7 +17,7 @@ struct Node {
     : key_ {key},
       parent_ {parent} {};
     
-    const_pointer predicessor() const { /*predecessor - the node that lies just behind the given node*/
+    const_pointer predecessor() const { /*predecessor - the node that lies just behind the given node*/
         auto copy = this;
         if (copy->left_) {
             copy = go_to_most_right(copy);
@@ -38,7 +38,7 @@ struct Node {
     }
 
 private:    
-    auto go_to_most_left(const_pointer copy) const {
+    auto go_to_most_left(pointer copy) const {
         copy = copy->right_;
         while(copy->left_) {
             copy = copy->left_;
@@ -46,7 +46,7 @@ private:
         return copy;
     }
 
-    auto go_to_most_right(const_pointer copy) const {
+    auto go_to_most_right(pointer copy) const {
         copy = copy->left_;
         while(copy->right_) {
             copy = copy->right_;
