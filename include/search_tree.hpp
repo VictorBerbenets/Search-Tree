@@ -156,6 +156,7 @@ private:
             pt = pt->parent_;
         }
     }
+
     size_type height(const_pointer pt) const {
         return pt ? pt->height_ : 0;
     }
