@@ -24,14 +24,14 @@ public:
     using value_compare   = Compare;
     using reference       = value_type&;
     using const_reference = const value_type&;
-    using pointer         = detail::Node<KeyT>*;
-    using const_pointer   = const detail::Node<KeyT>*;
-    using iterator        = detail::TreeIterator<KeyT>;
+    using node_type       = detail::Node<key_type>;
+    using pointer         = node_type*;
+    using const_pointer   = const node_type*;
+    using iterator        = detail::TreeIterator<key_type>;
     using const_iterator  = const iterator;
-    using node_type       = detail::Node<KeyT>;
 private:
-    using end_node        = detail::EndNode<KeyT>;
-    using end_pointer     = detail::EndNode<KeyT>*;
+    using end_node        = detail::EndNode<key_type>;
+    using end_pointer     = detail::EndNode<key_type>*;
 
     static constexpr difference_type DIFF_HEIGHT = 2; // difference between two subtree heights
 
@@ -77,18 +77,18 @@ private:
         return res;
     }
 
-    bool is_disbalance(difference_type diff) const noexcept { /*std::cout << "DIFF = " << diff << std::endl;*/ return diff == DIFF_HEIGHT; };
+    bool is_disbalance(difference_type diff) const noexcept { return diff == DIFF_HEIGHT; };
 public:
-template <typename Iter>
+    template <typename Iter>
     AVL_Tree(Iter begin, Iter end, const Compare& comp = Compare())
-    : end_node_ {new end_node{nullptr}},
-      comp_ {comp} {
+    : comp_ {comp} {
         for (; begin != end; ++begin) {
             insert(*begin);
         }
     }
 
-    AVL_Tree(std::initializer_list<KeyT> ls, const Compare& comp = Compare()): AVL_Tree {ls.begin(), ls.end(), comp} {}
+    AVL_Tree(std::initializer_list<KeyT> ls, const Compare& comp = Compare())
+    : AVL_Tree {ls.begin(), ls.end(), comp} {}
 
     AVL_Tree(const Compare& comp = Compare()) {
 
@@ -105,7 +105,6 @@ template <typename Iter>
                 tmp->right_ = curr_node;
             }
         }
-        delete end_node_;
     }
 
     const_pointer root_node() const noexcept { return root_node_; };
@@ -147,8 +146,9 @@ template <typename Iter>
         ++size_;
         if (root_node_ == nullptr) {
             root_node_ = new node_type{key};
-            end_node_->root_node_ = root_node_;
-            root_node_->parent_ = end_node_;
+            end_node_.left_ = root_node_;
+            root_node_->parent_ = std::addressof(end_node_);
+            begin_node_ = root_node_;
             return;
         }
 
@@ -175,6 +175,7 @@ template <typename Iter>
                 return ;
             }
         }
+        begin_node_ = get_most_left(root_node_);
         // std::cout << "KEY TO BALANCE = " << curr_node->key_ << std::endl;
 #if 0
         if (balance_tree(curr_node) != root_node_) {
@@ -209,25 +210,25 @@ template <typename Iter>
        graph.graph_dump(file_name);
     }
 
-    pointer get_most_left() const noexcept {
-        if (root_node_ == nullptr) { return end_node_; };
-        auto tmp = root_node_;
+    pointer get_most_left(pointer start_ptr) const noexcept {
         while(true) {
-            if (tmp->left_ == nullptr) { return tmp; }
-            tmp = tmp->left_;
+            if (start_ptr->left_ == nullptr) {
+                return start_ptr;
+            }
+            start_ptr = start_ptr->left_;
         }
     }
 
     size_type size() const noexcept { return size_; };
 
-    iterator begin() noexcept { return iterator{get_most_left()};}
-    const_iterator cbegin() const noexcept { return iterator{get_most_left()}; }
-    iterator end() noexcept { return iterator{end_node_}; }
-    const_iterator cend() const noexcept { return iterator{end_node_}; }
-
+    iterator begin() noexcept { return iterator{begin_node_};}
+    const_iterator cbegin() const noexcept { return iterator{begin_node_}; }
+    iterator end() noexcept { return iterator{std::addressof(end_node_)}; }
+    const_iterator cend() const noexcept { return iterator{std::addressof(end_node_)}; }
 private:
     pointer root_node_ {nullptr};
-    end_pointer end_node_ {nullptr};
+    end_node end_node_;
+    pointer begin_node_ {std::addressof(end_node_)};
     Compare comp_;
     size_type size_;
 };

@@ -10,11 +10,7 @@ struct Node {
     Node(KeyT key, Node* parent = nullptr)
     : key_ {key},
       parent_ {parent} {};
-    
-    Node* next_lleft()  const { return left_->left_;   }
-    Node* next_lright() const { return left_->right_;  }
-    Node* next_rright() const { return right_->right_; }
-    Node* next_rleft()  const { return right_->left_; }
+
 /*--------------------------------------------------------------*/
     KeyT key_;
     Node* parent_, *left_{nullptr}, *right_{nullptr};
@@ -23,15 +19,10 @@ struct Node {
 
 template<typename KeyT>
 struct EndNode: public Node<KeyT> {
-    explicit EndNode(Node<KeyT>* root)
-    :   Node<KeyT>{-777},
-        root_node_ {root} {}
+    explicit EndNode(Node<KeyT>* root = nullptr)
+    : Node<KeyT>{0, root} {}
 
-    EndNode() = default;
-
-    Node<KeyT>* root_node_;    
 };
-
 
 } // <--- namespace detail
 

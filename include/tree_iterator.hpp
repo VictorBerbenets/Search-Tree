@@ -23,40 +23,25 @@ public:
     using const_reference   = const value_type&;
     using difference_type   = std::ptrdiff_t;
 
-    TreeIterator(pointer ptr = nullptr) noexcept
-        : ptr_ {ptr},
-          end_node_ {find_end_node()} {}
+    TreeIterator(const_pointer ptr) noexcept
+        : ptr_ {ptr} {}
 
     const_pointer get_pointer() const noexcept { return ptr_; }
 
     TreeIterator& operator++() noexcept{
-        if (ptr_ == nullptr) {
-            return *this;
+        if (ptr_->right_) {
+            go_to_most_left();
         } else {
-            if (ptr_->right_) {
-                go_to_most_left();
-            } else {
-                go_upper_inc();
-            }
+            go_upper_inc();
         }
         return *this;
     }
 
     TreeIterator& operator--() noexcept {
-        if (ptr_ == end_node_) {
-            auto real_end = static_cast<EndNode<KeyT>*>(end_node_);
-            ptr_ = real_end->root_node_;
+        if (ptr_->left_) {
             go_to_most_right();
-            return *this;
-        }
-        if (ptr_ == nullptr) {
-            return *this;
         } else {
-            if (ptr_->left_) {
-                go_to_most_right();
-            } else {
-                go_upper_dec();
-            }
+            go_upper_dec();
         }
         return *this;
     }
@@ -110,18 +95,8 @@ private:
             ptr_ = tmp;
         }
     }
-
-    pointer find_end_node() {
-        if (ptr_ == nullptr) { return nullptr; }
-        auto res = ptr_;
-        while(res->parent_) {
-            res = res->parent_;
-        }
-        return res;
-    }
 /*------------------------------------------------------------------*/
-    pointer ptr_;
-    pointer end_node_;
+    const_pointer ptr_;
 }; // <--- class TreeIterator
 
 template<typename KeyT>
