@@ -79,13 +79,13 @@ private:
     }
 public:
     KeyT key_;
-    Node* parent_, *left_{nullptr}, *right_{nullptr};
+    pointer parent_, left_{nullptr}, right_{nullptr};
     int height_ {0};
 };
 
 template<typename KeyT>
 struct EndNode: public Node<KeyT> {
-    explicit EndNode(Node<KeyT>* root = nullptr)
+    explicit EndNode(Node<KeyT>::pointer root = nullptr)
     : Node<KeyT>{0, root} {}
 
 };
