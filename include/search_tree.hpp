@@ -238,8 +238,7 @@ std::ostream& operator<<(std::ostream& os, const AVL_Tree<KeyT, Compare>& rhs) {
     for (auto val : rhs) {
         os << val << ' ';
     }
-    os << std::endl;
-    return os;
+    return os << std::endl;
 }
 
 } // <--- namespace yLAB
