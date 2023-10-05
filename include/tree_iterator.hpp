@@ -29,20 +29,12 @@ public:
     const_pointer get_pointer() const noexcept { return ptr_; }
 
     TreeIterator& operator++() noexcept{
-        if (ptr_->right_) {
-            go_to_most_left();
-        } else {
-            go_upper_inc();
-        }
+        ptr_ = ptr_->successor();
         return *this;
     }
 
     TreeIterator& operator--() noexcept {
-        if (ptr_->left_) {
-            go_to_most_right();
-        } else {
-            go_upper_dec();
-        }
+        ptr_ = ptr_->predicessor();
         return *this;
     }
 
@@ -61,40 +53,6 @@ public:
     KeyT operator*() const noexcept { return ptr_->key_; }
     const KeyT* operator->() const noexcept { return std::addressof(ptr_->key_); }
 private:
-
-    void go_to_most_left() {
-        ptr_ = ptr_->right_;
-        while(ptr_->left_) {
-            ptr_ = ptr_->left_;
-        }
-    }
-
-    void go_to_most_right() {
-        ptr_ = ptr_->left_;
-        while(ptr_->right_) {
-            ptr_ = ptr_->right_;
-        }
-    }
-
-    void go_upper_dec() {
-        auto tmp = ptr_->parent_;
-        while(ptr_ == tmp->left_) {
-            ptr_ = std::exchange(tmp, tmp->parent_);
-        }
-        if (ptr_->left_ != tmp) {
-            ptr_ = tmp;
-        }
-    }
-
-    void go_upper_inc() {
-        auto tmp = ptr_->parent_;
-        while(ptr_ == tmp->right_) {
-            ptr_ = std::exchange(tmp, tmp->parent_);
-        }
-        if (ptr_->right_ != tmp) {
-            ptr_ = tmp;
-        }
-    }
 /*------------------------------------------------------------------*/
     const_pointer ptr_;
 }; // <--- class TreeIterator
