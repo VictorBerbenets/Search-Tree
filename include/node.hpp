@@ -38,7 +38,7 @@ struct Node {
     }
 
 private:    
-    auto go_to_most_left(pointer copy) const {
+    auto go_to_most_left(const_pointer copy) const {
         copy = copy->right_;
         while(copy->left_) {
             copy = copy->left_;
@@ -46,7 +46,7 @@ private:
         return copy;
     }
 
-    auto go_to_most_right(pointer copy) const {
+    auto go_to_most_right(const_pointer copy) const {
         copy = copy->left_;
         while(copy->right_) {
             copy = copy->right_;

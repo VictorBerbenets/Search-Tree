@@ -30,8 +30,8 @@ public:
     using iterator        = detail::TreeIterator<key_type>;
     using const_iterator  = const iterator;
 private:
-    using end_node        = detail::EndNode<key_type>;
-    using end_pointer     = detail::EndNode<key_type>*;
+    using end_node    = detail::EndNode<key_type>;
+    using end_pointer = end_node*;
 
     static constexpr difference_type DIFF_HEIGHT = 2; // difference between two subtree heights
 public:
@@ -46,7 +46,8 @@ public:
     AVL_Tree(std::initializer_list<KeyT> ls, const Compare& comp = Compare())
     : AVL_Tree {ls.begin(), ls.end(), comp} {}
 
-    AVL_Tree(const Compare& comp = Compare()) {
+    AVL_Tree(const Compare& comp = Compare())
+    : comp_ {comp} {
 
     }
 
@@ -63,19 +64,6 @@ public:
         }
     }
 
-    void print(const_pointer pt) {
-        if (!pt) { return; }
-
-        std::cout << "key = " << pt->key_ << std::endl;
-        std::cout << "height = " << pt->height_ << std::endl;
-
-        if (pt->left_) {
-            print(pt->left_);
-        }
-        if (pt->right_) {
-            print(pt->right_);
-        }
-    }
     const_iterator find(const key_type& key) const {
         auto curr_node = root_node_;
         while(curr_node) {
@@ -126,13 +114,8 @@ public:
             }
         }
         begin_node_ = get_most_left(begin_node_);
-        // std::cout << "KEY TO BALANCE = " << curr_node->key_ << std::endl;
-#if 0
-        if (balance_tree(curr_node) != root_node_) {
-            std::cout << "Error" << std::endl;
-            std::cout << "ROOT KEY = " << root_node_->key_ << std::endl;
-        }
-#endif
+
+       // balance_tree(curr_node);
     }
 
 
@@ -146,12 +129,12 @@ public:
 
     const_iterator begin()  const noexcept { return iterator{begin_node_}; }
     const_iterator cbegin() const noexcept { return iterator{begin_node_}; }
-    const_iterator end()    const noexcept { return iterator{std::addressof(end_node_)}; }
-    const_iterator cend()   const noexcept { return iterator{std::addressof(end_node_)}; }
+    const_iterator end()    const noexcept { return iterator{end_ptr_}; }
+    const_iterator cend()   const noexcept { return iterator{end_ptr_}; }
 private:
     //const_pointer root_node() const noexcept { return root_node_; };
     void increase_heights(pointer pt) {
-        while(pt) {
+        while(pt != end_ptr_) {
             pt->height_++;
             pt = pt->parent_;
         }
@@ -162,7 +145,7 @@ private:
     }
 
     void correct_height(pointer pt) {
-        while(pt) {
+        while(pt != end_ptr_) {
             size_type left_h  = height(pt->left_);
             size_type right_h = height(pt->right_);
             pt->height_ = std::max(left_h, right_h) + 1;
@@ -170,8 +153,8 @@ private:
         }
     }
 
-    pointer balance_tree(pointer pt) {
-        while(pt) {
+    void balance_tree(pointer pt) {
+        while(pt != end_ptr_) {
             if ( is_disbalance( height_difference(pt->right_, pt->left_) ) ) {
                 if (height_difference(pt->right_->right_, pt->right_->left_) >= 0) {
                     pt = left_turn(pt);
@@ -187,7 +170,6 @@ private:
             }
             pt = pt->parent_;
         }
-        return pt;
     }
 
     pointer get_most_left(pointer start_ptr) const {
@@ -245,10 +227,20 @@ private:
 private:
     pointer root_node_ {nullptr};
     end_node end_node_;
+    const end_pointer end_ptr_ {std::addressof(end_node_)};
     pointer begin_node_ {std::addressof(end_node_)};
     Compare comp_;
     size_type size_;
 }; // <--- class AVL_Tree
+
+template<typename KeyT, typename Compare>
+std::ostream& operator<<(std::ostream& os, const AVL_Tree<KeyT, Compare>& rhs) {
+    for (auto val : rhs) {
+        os << val << ' ';
+    }
+    os << std::endl;
+    return os;
+}
 
 } // <--- namespace yLAB
 

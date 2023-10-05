@@ -1,15 +1,21 @@
 #include <iostream>
 #include <iterator>
+#include <string>
 
 #include "search_tree.hpp"
 
 int main() {
-    yLAB::AVL_Tree<int> avl{0, -123, 43, 53245, -542352, -532, 100235};
-    auto it = std::prev(avl.end());
-    for (; it != avl.cbegin(); --it) {
+    yLAB::AVL_Tree<double> avl {5.32, 2,523, 5232, 1341, -51.532};
+    //auto it21 = std::prev(avl.end());
+    auto find = avl.find(5.32);
+    std::cout << avl << std::endl;
+    if (find != avl.end()) {
+        std::cout << "FIND = " << *find << std::endl;
+    }
+
+    for (auto it = avl.end(); it != avl.cbegin(); --it) {
         std::cout << "DECREMENT IT = " << *it << std::endl;
     }
-        std::cout << "DECREMENT IT = " << *it << std::endl;
     //std::advance(it, 5);
     avl.graph_dump("main");
     for (auto it = avl.cbegin(); it != avl.cend(); ++it) {
