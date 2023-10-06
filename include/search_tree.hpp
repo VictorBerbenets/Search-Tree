@@ -196,6 +196,8 @@ private:
 
     }
 
+    
+
     void correct_heights(pointer pt) {
         while(pt != end_ptr_) {
             pt->height_ = determine_height(pt);
