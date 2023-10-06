@@ -149,7 +149,7 @@ private:
 
     pointer left_turn(pointer pt) {
         auto parent = pt->parent_;
-       // graph_dump("graph1");
+
         if (parent != end_ptr_) {
             (parent->left_ == pt ? parent->left_ : parent->right_) = pt->right_;
             pt->right_->parent_ = parent;
@@ -159,19 +159,16 @@ private:
             end_ptr_->left_ = root_node_;
         }
 
-        auto tmp = pt->right_;
-        pt->right_ = tmp->left_;
+        auto tmp = std::exchange(pt->right_, pt->right_->left_);
         if (tmp->left_) {
             tmp->left_->parent_ = pt;
         }
         pt->parent_ = tmp;
         tmp->left_ = pt;
-      //  graph_dump("graph2");
 
         tmp->left_->height_ = is_child(tmp->left_) ? 0 : determine_height(tmp->left_);
         correct_heights(tmp);
 
-       // graph_dump("graph3");
         return tmp;
     }
 
