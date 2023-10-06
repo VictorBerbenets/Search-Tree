@@ -1,7 +1,6 @@
 #ifndef TREE_NODE
 #define TREE_NODE
 
-#include <cassert>
 #include <utility>
 
 namespace yLAB {
@@ -18,45 +17,39 @@ struct Node {
       parent_ {parent} {};
     
     const_pointer predecessor() const { /*predecessor - the node that lies just behind the given node*/
-        auto copy = this;
-        if (copy->left_) {
-            copy = go_to_most_right(copy);
-        } else {
-            copy = go_upper_dec(copy);
+        if (this->left_) {
+            return go_to_most_right();
         }
-        return copy;
+        return go_upper_dec();
     }
 
     const_pointer successor() const { /*successor - the node that lies just after the given node*/
-        auto copy = this;
-        if (copy->right_) {
-            copy = go_to_most_left(copy);
-        } else {
-            copy = go_upper_inc(copy);
+        if (this->right_) {
+            return go_to_most_left();
         }
-        return copy;
+        return go_upper_inc();
     }
 
 private:    
-    auto go_to_most_left(const_pointer copy) const {
-        copy = copy->right_;
-        while(copy->left_) {
-            copy = copy->left_;
+    auto go_to_most_left() const {
+        auto tmp = this->right_;
+        while(tmp->left_) {
+            tmp = tmp->left_;
         }
-        return copy;
+        return tmp;
     }
 
-    auto go_to_most_right(const_pointer copy) const {
-        copy = copy->left_;
-        while(copy->right_) {
-            copy = copy->right_;
+    auto go_to_most_right() const {
+        auto tmp = this->left_;
+        while(tmp->right_) {
+            tmp = tmp->right_;
         }
-        return copy;
+        return tmp;
     }
 
-    auto go_upper_dec(const_pointer copy) const {
-        assert(copy);
-        auto tmp = copy->parent_;
+    auto go_upper_dec() const {
+        auto tmp = this->parent_;
+        auto copy = this;
         while(copy == tmp->left_) {
             copy = std::exchange(tmp, tmp->parent_);
         }
@@ -66,9 +59,9 @@ private:
         return copy;
     }
 
-    auto go_upper_inc(const_pointer copy) const {
-        assert(copy);
-        auto tmp = copy->parent_;
+    auto go_upper_inc() const {
+        auto tmp = this->parent_;
+        auto copy = this;
         while(copy == tmp->right_) {
             copy = std::exchange(tmp, tmp->parent_);
         }
