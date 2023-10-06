@@ -93,14 +93,14 @@ public:
             if (comp_(key, curr_node->key_)) {
                 if (!curr_node->left_) {
                     curr_node->left_ = new node_type{key, curr_node};
-                    correct_height(curr_node);
+                    correct_heights(curr_node);
                     break;
                 }
                 curr_node = curr_node->left_;
             } else if (comp_(curr_node->key_, key)) {
                 if (!curr_node->right_) {
                     curr_node->right_ = new node_type{key, curr_node};
-                    correct_height(curr_node);
+                    correct_heights(curr_node);
                     break;
                 }
                 curr_node = curr_node->right_;
@@ -109,7 +109,6 @@ public:
                 return ;
             }
         }
-
         balance_tree(curr_node);
         begin_node_ = get_most_left(begin_node_);
     }
@@ -122,49 +121,14 @@ public:
 
 
     size_type size() const noexcept { return size_; };
+    
+    bool empty() const noexcept { return size_ == 0; };
 
     const_iterator begin()  const noexcept { return iterator{begin_node_}; }
     const_iterator cbegin() const noexcept { return iterator{begin_node_}; }
     const_iterator end()    const noexcept { return iterator{end_ptr_}; }
     const_iterator cend()   const noexcept { return iterator{end_ptr_}; }
 private:
-    void correct_height(pointer pt) {
-        while(pt != end_ptr_) {
-            pt->height_ = determine_height(pt) + 1;
-            pt = pt->parent_;
-        }
-    }
-    
-    size_type determine_height(pointer pt) const {
-        size_type left_h  = height(pt->left_);
-        size_type right_h = height(pt->right_);
-        return std::max(left_h, right_h); 
-    }
-
-    size_type height(pointer pt) const {
-        return pt ? pt->height_ : 0;
-    }
-
-    
-
-    void balance_tree(pointer pt) {
-        while(pt != end_ptr_) {
-            if ( is_disbalance( height_difference(pt->right_, pt->left_) ) ) {
-                if (height_difference(pt->right_->right_, pt->right_->left_) >= 0) {
-                    pt = left_turn(pt);
-                } else {
-                    big_left_turn(pt);
-                }
-            } else if ( is_disbalance( height_difference(pt->left_, pt->right_) ) ) {
-                if (height_difference(pt->left_->left_, pt->left_->right_) >= 0) {
-                    right_turn(pt);
-                } else {
-                    big_right_turn(pt);
-                }
-            }
-            pt = pt->parent_;
-        }
-    }
 
     pointer get_most_left(pointer start_ptr) const {
         while(true) {
@@ -185,7 +149,7 @@ private:
 
     pointer left_turn(pointer pt) {
         auto parent = pt->parent_;
-        graph_dump("graph1");
+       // graph_dump("graph1");
         if (parent != end_ptr_) {
             (parent->left_ == pt ? parent->left_ : parent->right_) = pt->right_;
             pt->right_->parent_ = parent;
@@ -195,23 +159,64 @@ private:
             end_ptr_->left_ = root_node_;
         }
 
-        auto tmp    = pt->right_;
-        pt->parent_ = tmp;
-        pt->right_  = tmp->left_;
-        if (pt->right_) {
-            if (pt->right_->left_) {
-                pt->right_->left_->parent_ = pt;
-            }
+        auto tmp = pt->right_;
+        pt->right_ = tmp->left_;
+        if (tmp->left_) {
+            tmp->left_->parent_ = pt;
         }
+        pt->parent_ = tmp;
         tmp->left_ = pt;
-//        tmp->left_->height_ = determine_height(tmp->left_);
-  //      tmp->height_ = determine_height(tmp);
-        graph_dump("graph2");
+      //  graph_dump("graph2");
+
+        tmp->left_->height_ = is_child(tmp->left_) ? 0 : determine_height(tmp->left_);
+        correct_heights(tmp);
+
+       // graph_dump("graph3");
         return tmp;
     }
 
     void big_left_turn(pointer pt) {
 
+    }
+
+    void correct_heights(pointer pt) {
+        while(pt != end_ptr_) {
+            pt->height_ = determine_height(pt);
+            pt = pt->parent_;
+        }
+    }
+    
+    size_type determine_height(pointer pt) const {
+        size_type left_h  = height(pt->left_);
+        size_type right_h = height(pt->right_);
+        return std::max(left_h, right_h) + 1;
+    }
+
+    size_type height(pointer pt) const {
+        return pt ? pt->height_ : 0;
+    }
+
+    void balance_tree(pointer pt) {
+        while(pt != end_ptr_) {
+            if ( is_disbalance( height_difference(pt->right_, pt->left_) ) ) {
+                if (height_difference(pt->right_->right_, pt->right_->left_) >= 0) {
+                    pt = left_turn(pt);
+                } else {
+                    big_left_turn(pt);
+                }
+            } else if ( is_disbalance( height_difference(pt->left_, pt->right_) ) ) {
+                if (height_difference(pt->left_->left_, pt->left_->right_) >= 0) {
+                    right_turn(pt);
+                } else {
+                    big_right_turn(pt);
+                }
+            }
+            pt = pt->parent_;
+        }
+    }
+    
+    bool is_child(pointer pt) const {
+        return pt->left_ == nullptr && pt->right_ == nullptr;
     }
 
     difference_type height_difference(const_pointer left, const_pointer right) const noexcept {
