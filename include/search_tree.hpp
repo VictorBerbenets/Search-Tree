@@ -129,7 +129,6 @@ public:
     const_iterator end()    const noexcept { return iterator{end_ptr_}; }
     const_iterator cend()   const noexcept { return iterator{end_ptr_}; }
 private:
-
     pointer get_most_left(pointer start_ptr) const {
         while(true) {
             if (start_ptr->left_ == nullptr) {
@@ -139,12 +138,29 @@ private:
         }
     }
 
-    void right_turn(pointer pt) {
+    pointer right_turn(pointer pt) {
+        auto parent = pt->parent_;
 
-    }
+        if (parent != end_ptr_) {
+            (parent->left_ == pt ? parent->left_ : parent->right_) = pt->left_;
+            pt->left_->parent_ = parent;
+        } else {
+            root_node_ = pt->left_;
+            root_node_->parent_ = end_ptr_;
+            end_ptr_->left_ = root_node_;
+        }
 
-    void big_right_turn(pointer pt) {
+        auto tmp = std::exchange(pt->left_, pt->left_->right_);
+        if (tmp->right_) {
+            tmp->right_->parent_ = pt;
+        }
+        pt->parent_ = tmp;
+        tmp->right_ = pt;
 
+        tmp->right_->height_ = is_child(tmp->right_) ? 0 : determine_height(tmp->right_);
+        correct_heights(tmp);
+
+        return tmp;
     }
 
     pointer left_turn(pointer pt) {
@@ -170,6 +186,10 @@ private:
         correct_heights(tmp);
 
         return tmp;
+    }
+
+    void big_right_turn(pointer pt) {
+
     }
 
     void big_left_turn(pointer pt) {
