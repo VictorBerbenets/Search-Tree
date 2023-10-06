@@ -17,14 +17,14 @@ struct Node {
       parent_ {parent} {};
     
     const_pointer predecessor() const { /*predecessor - the node that lies just behind the given node*/
-        if (this->left_) {
+        if (left_) {
             return go_to_most_right();
         }
         return go_upper_dec();
     }
 
     const_pointer successor() const { /*successor - the node that lies just after the given node*/
-        if (this->right_) {
+        if (right_) {
             return go_to_most_left();
         }
         return go_upper_inc();
@@ -32,7 +32,7 @@ struct Node {
 
 private:    
     auto go_to_most_left() const {
-        auto tmp = this->right_;
+        auto tmp = right_;
         while(tmp->left_) {
             tmp = tmp->left_;
         }
@@ -40,7 +40,7 @@ private:
     }
 
     auto go_to_most_right() const {
-        auto tmp = this->left_;
+        auto tmp = left_;
         while(tmp->right_) {
             tmp = tmp->right_;
         }
@@ -48,7 +48,7 @@ private:
     }
 
     auto go_upper_dec() const {
-        auto tmp = this->parent_;
+        auto tmp = parent_;
         auto copy = this;
         while(copy == tmp->left_) {
             copy = std::exchange(tmp, tmp->parent_);
@@ -60,7 +60,7 @@ private:
     }
 
     auto go_upper_inc() const {
-        auto tmp = this->parent_;
+        auto tmp = parent_;
         auto copy = this;
         while(copy == tmp->right_) {
             copy = std::exchange(tmp, tmp->parent_);
