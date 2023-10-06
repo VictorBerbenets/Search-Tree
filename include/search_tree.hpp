@@ -69,11 +69,9 @@ public:
         while(curr_node) {
             if (comp_(key, curr_node->key_)) {
                 curr_node = curr_node->left_;
-            }
-            else if (comp_(curr_node->key_, key)) {
+            } else if (comp_(curr_node->key_, key)) {
                 curr_node = curr_node->right_;
-            }
-            else {
+            } else {
                 return const_iterator{curr_node};
             }
         }
@@ -99,23 +97,21 @@ public:
                     break;
                 }
                 curr_node = curr_node->left_;
-            }
-            else if (comp_(curr_node->key_, key)) {
+            } else if (comp_(curr_node->key_, key)) {
                 if (!curr_node->right_) {
                     curr_node->right_ = new node_type{key, curr_node};
                     correct_height(curr_node);
                     break;
                 }
                 curr_node = curr_node->right_;
-            }
-            else {
+            } else {
                 --size_;
                 return ;
             }
         }
         begin_node_ = get_most_left(begin_node_);
 
-       // balance_tree(curr_node);
+        balance_tree(curr_node);
     }
 
 
@@ -133,25 +129,25 @@ public:
     const_iterator cend()   const noexcept { return iterator{end_ptr_}; }
 private:
     //const_pointer root_node() const noexcept { return root_node_; };
-    void increase_heights(pointer pt) {
-        while(pt != end_ptr_) {
-            pt->height_++;
-            pt = pt->parent_;
-        }
-    }
-
-    size_type height(const_pointer pt) const {
-        return pt ? pt->height_ : 0;
-    }
 
     void correct_height(pointer pt) {
         while(pt != end_ptr_) {
-            size_type left_h  = height(pt->left_);
-            size_type right_h = height(pt->right_);
-            pt->height_ = std::max(left_h, right_h) + 1;
+            pt->height_ = determine_height(pt) + 1;
             pt = pt->parent_;
         }
     }
+    
+    size_type determine_height(pointer pt) const {
+        size_type left_h  = height(pt->left_);
+        size_type right_h = height(pt->right_);
+        return std::max(left_h, right_h); 
+    }
+
+    size_type height(pointer pt) const {
+        return pt ? pt->height_ : 0;
+    }
+
+    
 
     void balance_tree(pointer pt) {
         while(pt != end_ptr_) {
@@ -169,6 +165,7 @@ private:
                 }
             }
             pt = pt->parent_;
+//            std::cout << "NEW PT = " << pt->key_ << std::endl;
         }
     }
 
@@ -192,24 +189,25 @@ private:
     pointer left_turn(pointer pt) {
         auto parent = pt->parent_;
         graph_dump("graph1");
-        if (parent) {
+        if (parent != end_ptr_) {
             (parent->left_ == pt ? parent->left_ : parent->right_) = pt->right_;
             pt->right_->parent_ = parent;
         } else {
             root_node_ = pt->right_;
-            pt->right_->parent_ = nullptr;
+            root_node_->parent_ = end_ptr_;
         }
 
-        auto tmp     = pt->right_;
-        pt->parent_  = tmp;
-        pt->right_   = tmp->left_;
+        auto tmp    = pt->right_;
+        pt->parent_ = tmp;
+        pt->right_  = tmp->left_;
         if (pt->right_) {
             if (pt->right_->left_) {
                 pt->right_->left_->parent_ = pt;
             }
         }
-        tmp->left_   = pt;
-        // change heights
+        tmp->left_ = pt;
+//        tmp->left_->height_ = determine_height(tmp->left_);
+  //      tmp->height_ = determine_height(tmp);
         graph_dump("graph2");
         return tmp;
     }
