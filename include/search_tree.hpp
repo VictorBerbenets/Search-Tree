@@ -109,14 +109,14 @@ public:
                 return ;
             }
         }
-        begin_node_ = get_most_left(begin_node_);
 
         balance_tree(curr_node);
+        begin_node_ = get_most_left(begin_node_);
     }
 
 
     void graph_dump(const std::string& file_name = "graph.png") const {
-       graphics::tree_painter<KeyT> graph {root_node_};
+       graphics::tree_painter<KeyT> graph {end_ptr_};
        graph.graph_dump(file_name);
     }
 
@@ -128,8 +128,6 @@ public:
     const_iterator end()    const noexcept { return iterator{end_ptr_}; }
     const_iterator cend()   const noexcept { return iterator{end_ptr_}; }
 private:
-    //const_pointer root_node() const noexcept { return root_node_; };
-
     void correct_height(pointer pt) {
         while(pt != end_ptr_) {
             pt->height_ = determine_height(pt) + 1;
@@ -165,7 +163,6 @@ private:
                 }
             }
             pt = pt->parent_;
-//            std::cout << "NEW PT = " << pt->key_ << std::endl;
         }
     }
 
@@ -195,6 +192,7 @@ private:
         } else {
             root_node_ = pt->right_;
             root_node_->parent_ = end_ptr_;
+            end_ptr_->left_ = root_node_;
         }
 
         auto tmp    = pt->right_;
