@@ -6,6 +6,7 @@
 #include <memory>
 #include <initializer_list>
 #include <cstddef>
+#include <cassert>
 
 #include "tree_iterator.hpp"
 #include "node.hpp"
@@ -47,9 +48,7 @@ public:
     : AVL_Tree {ls.begin(), ls.end(), comp} {}
 
     AVL_Tree(const Compare& comp = Compare())
-    : comp_ {comp} {
-
-    }
+    : comp_ {comp} {}
 
     ~AVL_Tree() {
         for (pointer curr_node = root_node_, tmp{0}; curr_node; curr_node = tmp) {
@@ -80,13 +79,7 @@ public:
 
     iterator insert(const key_type& key) {
         ++size_;
-        if (root_node_ == nullptr) {
-            root_node_ = new node_type{key};
-            end_node_.left_ = root_node_;
-            root_node_->parent_ = std::addressof(end_node_);
-            begin_node_ = root_node_;
-            return iterator{root_node_};
-        }
+        if (root_node_ == nullptr) { return create_root_node(key); }
 
         auto curr_node = root_node_;
         while(curr_node) {
@@ -109,11 +102,12 @@ public:
                 return iterator{curr_node};
             }
         }
+
         balance_tree(curr_node);
         begin_node_ = get_most_left(begin_node_);
+
         return iterator{curr_node};
     }
-
 
     void graph_dump(const std::string& file_name = "graph.png") const {
        graphics::tree_painter<KeyT> graph {end_ptr_};
@@ -126,9 +120,9 @@ public:
     bool empty() const noexcept { return size_ == 0; };
 
     const_iterator begin()  const noexcept { return iterator{begin_node_}; }
-    const_iterator cbegin() const noexcept { return iterator{begin_node_}; }
+    const_iterator cbegin() const noexcept { return begin(); }
     const_iterator end()    const noexcept { return iterator{end_ptr_}; }
-    const_iterator cend()   const noexcept { return iterator{end_ptr_}; }
+    const_iterator cend()   const noexcept { return end(); }
 private:
     pointer right_turn(pointer pt) {
         set_child_parent_connection(pt, pt->left_);
@@ -219,7 +213,7 @@ private:
     }
     
     void set_child_height(pointer child) {
-        child->height_  = is_child(child) ? 0 : determine_height(child);
+        child->height_ = is_child(child) ? 0 : determine_height(child);
     }
 
     void set_child_parent_connection(pointer pt, pointer child) {
@@ -232,15 +226,6 @@ private:
             root_node_ = child;
             root_node_->parent_ = end_ptr_;
             end_ptr_->left_ = root_node_;
-        }
-    }
-
-    static pointer get_most_left(pointer start_ptr) {
-        while(true) {
-            if (start_ptr->left_ == nullptr) {
-                return start_ptr;
-            }
-            start_ptr = start_ptr->left_;
         }
     }
 
@@ -267,29 +252,49 @@ private:
                 if (height_difference(pt->right_->right_, pt->right_->left_) >= 0) {
                     pt = left_turn(pt);
                 } else {
-                    big_left_turn(pt);
+                    pt = big_left_turn(pt);
                 }
             } else if ( is_disbalance( height_difference(pt->left_, pt->right_) ) ) {
                 if (height_difference(pt->left_->left_, pt->left_->right_) >= 0) {
-                    right_turn(pt);
+                    pt = right_turn(pt);
                 } else {
-                    big_right_turn(pt);
+                    pt = big_right_turn(pt);
                 }
             }
             pt = pt->parent_;
         }
     }
-    
-    bool is_child(pointer pt) const {
-        return pt->left_ == nullptr && pt->right_ == nullptr;
-    }
 
     difference_type height_difference(const_pointer left, const_pointer right) const noexcept {
-        auto res = (left ? (left->height_ + 1) : 0) - (right ? (right->height_ + 1) : 0);
-        return res;
+        return (left ? (left->height_ + 1) : 0) - (right ? (right->height_ + 1) : 0);
     }
 
     bool is_disbalance(difference_type diff) const noexcept { return diff == DIFF_HEIGHT; }
+ 
+    iterator create_root_node(const key_type& key) {
+        root_node_ = new node_type{key};
+        end_node_.left_ = root_node_;
+        root_node_->parent_ = std::addressof(end_node_);
+        begin_node_ = root_node_;
+
+        return iterator{root_node_};
+    }
+
+    static bool is_child(pointer pt) {
+        assert(pt);
+        return pt->left_ == nullptr && pt->right_ == nullptr;
+    }
+
+    static pointer get_most_left(pointer start_ptr) {
+        assert(start_ptr);
+        while(true) {
+            if (start_ptr->left_ == nullptr) {
+                return start_ptr;
+            }
+            start_ptr = start_ptr->left_;
+        }
+    }
+
 private:
     pointer root_node_ {nullptr};
     end_node end_node_;

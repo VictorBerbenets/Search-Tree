@@ -3,6 +3,7 @@
 
 #include <fstream>
 #include <filesystem>
+#include <concepts>
 #include <queue>
 
 #include "node.hpp"
@@ -11,32 +12,25 @@ namespace graphics {
 
 template<typename NodeKeyT>
 class tree_painter {
-    using size_type  = std::size_t;
-    using pointer    = yLAB::detail::Node<NodeKeyT>*;
+    using size_type    = std::size_t;
+    using node_type    = yLAB::detail::Node<NodeKeyT>;
+    using end_node_ptr = yLAB::detail::EndNode<NodeKeyT>*;
+    using pointer      = node_type*;
 
     enum class Nodes : char { Left = 1, Right = 2 };
 
     const std::string DIR_NAME = "data";
 
-std::string create_dir() {
-    using namespace std::filesystem;
+    std::string create_dir() {
+        using namespace std::filesystem;
 
-    std::string relative_path = "../include/";
-    directory_entry resource_dir(relative_path.append(DIR_NAME));
-    relative_path.append("/");
-    if (!resource_dir.is_directory()) {
-        create_directory(relative_path);
-    }
-    return relative_path;
-}
-
-    void graph_print() {
-
-    }
-
-    template<typename... Args>
-    void graph_print(std::ofstream& graph_file, Args&&... args) {
-
+        std::string relative_path = "../include/";
+        directory_entry resource_dir(relative_path.append(DIR_NAME));
+        relative_path.append("/");
+        if (!resource_dir.is_directory()) {
+            create_directory(relative_path);
+        }
+        return relative_path;
     }
 
     void set_graph(std::ofstream& graph_file, const char* flcol = "lightgreen", float rksep = 1.3,
@@ -51,11 +45,17 @@ std::string create_dir() {
         graph_file << "edge [color = " << color << ", arrowhead = " << arrowhead << ", arrowsize = "
                    << arrow_sz << ", penwidth = " << pnwidth << "];\n";
     }
-
+    
     void create_node(std::ofstream& graph_file, pointer elem, size_type curr_node) const {
-        graph_file << "node" << curr_node << " [shape = Mrecord, style = filled, fillcolor = \"#FFD0D0\", label ="
-                    "\"{address: "<< elem << "|key: "<< elem->key_ << "|height: "<< elem->height_ <<
-                    "| { <ptr1> left: " << elem->left_ << "| <ptr2> right: " << elem->right_ << "|parent: " << elem->parent_ << "}}\"]\n";
+        // to do
+        if (std::same_as<decltype(elem), const end_node_ptr>) {
+            graph_file << "node" << curr_node << " [shape = Mrecord, style = filled, fillcolor = \"#ABFFF1\", label ="
+                        "\"{End Node | {address: " << elem << "} | { <ptr1> left: " << elem->left_ <<  "}}\"]\n";
+        } else {
+            graph_file << "node" << curr_node << " [shape = Mrecord, style = filled, fillcolor = \"#FFD0D0\", label ="
+                        "\"{address: "<< elem << "|key: "<< elem->key_ << "|height: "<< elem->height_ <<
+                        "| { <ptr1> left: " << elem->left_ << "| <ptr2> right: " << elem->right_ << "|parent: " << elem->parent_ << "}}\"]\n";
+        }
     }
 
     void create_next_graph_node(std::ofstream& graph_file, pointer elem, size_type curr_node,
