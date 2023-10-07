@@ -112,14 +112,25 @@ public:
     size_type erase(const key_type& key) {
         auto erase_it = find(key);
         if (erase_it == end()) { return 0; }
-
-        iterator replace_it = erase_it->left_ ? erase_it.get_most_right() : nullptr;
-        if (replace_it) {
-             
+        
+        auto erase_ptr = const_cast<pointer>(erase_it.get_pointer());
+        auto replace_ptr = erase_ptr->left_ ? erase_ptr->get_most_right() : nullptr;
+        if (replace_ptr) {
+            auto rep_parent = replace_ptr->parent_;
+            erase_ptr->key_ = std::exchange(replace_ptr->key_, 0);
+            (rep_parent->left_ == replace_ptr ? rep_parent->left_ : rep_parent->right_) = nullptr;
+            delete replace_ptr;
+            balance_tree(rep_parent);
         } else {
-            
+            auto erase_parent = erase_ptr->parent_;
+            (erase_parent->left_ == erase_ptr ? erase_parent->left_ : erase_parent->right_) = erase_ptr->right_;
+            if (erase_ptr->right_) {
+                erase_ptr->right_->parent_ = erase_parent;
+            }
+            delete erase_ptr;
+            balance_tree(erase_parent);
         }
-
+        begin_node_ = get_most_left(root_node_);
         return 1;
     }
 

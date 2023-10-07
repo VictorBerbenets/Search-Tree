@@ -69,7 +69,7 @@ struct Node {
         }
         return copy;
     }
-public:
+
     KeyT key_;
     pointer parent_, left_{nullptr}, right_{nullptr};
     int height_ {0};
