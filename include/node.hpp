@@ -18,20 +18,19 @@ struct Node {
     
     const_pointer predecessor() const { /*predecessor - the node that lies just behind the given node*/
         if (left_) {
-            return go_to_most_right();
+            return get_most_right();
         }
         return go_upper_dec();
     }
 
     const_pointer successor() const { /*successor - the node that lies just after the given node*/
         if (right_) {
-            return go_to_most_left();
+            return get_most_left();
         }
         return go_upper_inc();
     }
 
-private:    
-    auto go_to_most_left() const {
+    auto get_most_left() const {
         auto tmp = right_;
         while(tmp->left_) {
             tmp = tmp->left_;
@@ -39,7 +38,7 @@ private:
         return tmp;
     }
 
-    auto go_to_most_right() const {
+    auto get_most_right() const {
         auto tmp = left_;
         while(tmp->right_) {
             tmp = tmp->right_;

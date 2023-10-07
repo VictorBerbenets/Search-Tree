@@ -108,6 +108,20 @@ public:
 
         return iterator{curr_node};
     }
+    
+    size_type erase(const key_type& key) {
+        auto erase_it = find(key);
+        if (erase_it == end()) { return 0; }
+
+        iterator replace_it = erase_it->left_ ? erase_it.get_most_right() : nullptr;
+        if (replace_it) {
+             
+        } else {
+            
+        }
+
+        return 1;
+    }
 
     void graph_dump(const std::string& file_name = "graph.png") const {
        graphics::tree_painter<KeyT> graph {end_ptr_};
@@ -274,7 +288,7 @@ private:
     iterator create_root_node(const key_type& key) {
         root_node_ = new node_type{key};
         end_node_.left_ = root_node_;
-        root_node_->parent_ = std::addressof(end_node_);
+        root_node_->parent_ = end_ptr_;
         begin_node_ = root_node_;
 
         return iterator{root_node_};
