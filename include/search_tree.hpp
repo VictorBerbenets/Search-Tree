@@ -78,14 +78,14 @@ public:
         return cend();
     }
 
-    void insert(const key_type& key) {
+    iterator insert(const key_type& key) {
         ++size_;
         if (root_node_ == nullptr) {
             root_node_ = new node_type{key};
             end_node_.left_ = root_node_;
             root_node_->parent_ = std::addressof(end_node_);
             begin_node_ = root_node_;
-            return;
+            return iterator{root_node_};
         }
 
         auto curr_node = root_node_;
@@ -106,11 +106,12 @@ public:
                 curr_node = curr_node->right_;
             } else {
                 --size_;
-                return ;
+                return iterator{curr_node};
             }
         }
         balance_tree(curr_node);
         begin_node_ = get_most_left(begin_node_);
+        return iterator{curr_node};
     }
 
 
@@ -129,7 +130,112 @@ public:
     const_iterator end()    const noexcept { return iterator{end_ptr_}; }
     const_iterator cend()   const noexcept { return iterator{end_ptr_}; }
 private:
-    pointer get_most_left(pointer start_ptr) const {
+    pointer right_turn(pointer pt) {
+        set_child_parent_connection(pt, pt->left_);
+
+        auto local_child = std::exchange(pt->left_, pt->left_->right_);
+
+        if (local_child->right_) {
+            local_child->right_->parent_ = pt;
+        }
+        pt->parent_ = local_child;
+        local_child->right_ = pt;
+
+        set_child_height(local_child->right_);
+        correct_heights(local_child);
+
+        return local_child;
+    }
+
+    pointer left_turn(pointer pt) {
+        set_child_parent_connection(pt, pt->right_);
+
+        auto local_child = std::exchange(pt->right_, pt->right_->left_);
+
+        if (local_child->left_) {
+            local_child->left_->parent_ = pt;
+        }
+        pt->parent_ = local_child;
+        local_child->left_ = pt;
+
+        set_child_height(local_child->left_);
+        correct_heights(local_child);
+
+        return local_child;
+    }
+
+    pointer big_right_turn(pointer pt) {
+        set_child_parent_connection(pt, pt->left_->right_);
+
+        auto local_root = pt->left_;
+        auto local_root_child = local_root->right_;
+        
+        pt->left_ = local_root_child->right_;
+        if (local_root_child->right_) {
+            local_root_child->right_->parent_ = pt;
+        }
+        local_root->right_ = local_root_child->left_;
+        if (local_root_child->left_) {
+            local_root_child->left_->parent_ = local_root;
+        }
+
+        local_root_child->right_ = pt;
+        local_root_child->left_  = local_root;
+
+        pt->parent_ = local_root->parent_ = local_root_child;
+
+        set_child_height(local_root_child->left_);
+        set_child_height(local_root_child->right_);
+        correct_heights(local_root_child);
+ 
+        return local_root_child;
+    }
+
+    pointer big_left_turn(pointer pt) {
+        set_child_parent_connection(pt, pt->right_->left_);
+
+        auto local_root = pt->right_;
+        auto local_root_child = local_root->left_;
+        
+        pt->right_ = local_root_child->left_;
+        if (local_root_child->left_) {
+            local_root_child->left_->parent_ = pt;
+        }
+        local_root->left_ = local_root_child->right_;
+        if (local_root_child->right_) {
+            local_root_child->right_->parent_ = local_root;
+        }
+
+        local_root_child->left_  = pt;
+        local_root_child->right_ = local_root;
+
+        pt->parent_ = local_root->parent_ = local_root_child;
+        
+        set_child_height(local_root_child->left_);
+        set_child_height(local_root_child->right_);
+        correct_heights(local_root_child);
+ 
+        return local_root_child;
+    }
+    
+    void set_child_height(pointer child) {
+        child->height_  = is_child(child) ? 0 : determine_height(child);
+    }
+
+    void set_child_parent_connection(pointer pt, pointer child) {
+        auto parent = pt->parent_;
+
+        if (parent != end_ptr_) {
+            (parent->left_ == pt ? parent->left_ : parent->right_) = child;
+            child->parent_ = parent;
+        } else {
+            root_node_ = child;
+            root_node_->parent_ = end_ptr_;
+            end_ptr_->left_ = root_node_;
+        }
+    }
+
+    static pointer get_most_left(pointer start_ptr) {
         while(true) {
             if (start_ptr->left_ == nullptr) {
                 return start_ptr;
@@ -137,66 +243,6 @@ private:
             start_ptr = start_ptr->left_;
         }
     }
-
-    pointer right_turn(pointer pt) {
-        auto parent = pt->parent_;
-
-        if (parent != end_ptr_) {
-            (parent->left_ == pt ? parent->left_ : parent->right_) = pt->left_;
-            pt->left_->parent_ = parent;
-        } else {
-            root_node_ = pt->left_;
-            root_node_->parent_ = end_ptr_;
-            end_ptr_->left_ = root_node_;
-        }
-
-        auto tmp = std::exchange(pt->left_, pt->left_->right_);
-        if (tmp->right_) {
-            tmp->right_->parent_ = pt;
-        }
-        pt->parent_ = tmp;
-        tmp->right_ = pt;
-
-        tmp->right_->height_ = is_child(tmp->right_) ? 0 : determine_height(tmp->right_);
-        correct_heights(tmp);
-
-        return tmp;
-    }
-
-    pointer left_turn(pointer pt) {
-        auto parent = pt->parent_;
-
-        if (parent != end_ptr_) {
-            (parent->left_ == pt ? parent->left_ : parent->right_) = pt->right_;
-            pt->right_->parent_ = parent;
-        } else {
-            root_node_ = pt->right_;
-            root_node_->parent_ = end_ptr_;
-            end_ptr_->left_ = root_node_;
-        }
-
-        auto tmp = std::exchange(pt->right_, pt->right_->left_);
-        if (tmp->left_) {
-            tmp->left_->parent_ = pt;
-        }
-        pt->parent_ = tmp;
-        tmp->left_ = pt;
-
-        tmp->left_->height_ = is_child(tmp->left_) ? 0 : determine_height(tmp->left_);
-        correct_heights(tmp);
-
-        return tmp;
-    }
-
-    void big_right_turn(pointer pt) {
-
-    }
-
-    void big_left_turn(pointer pt) {
-
-    }
-
-    
 
     void correct_heights(pointer pt) {
         while(pt != end_ptr_) {
