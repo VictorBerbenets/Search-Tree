@@ -33,6 +33,8 @@ public:
 private:
     using end_node    = detail::EndNode<key_type>;
     using end_pointer = end_node*;
+    
+    enum class childPosition : char {Left = 1, Right = 2};
 
     static constexpr difference_type DIFF_HEIGHT = 2; // difference between two subtree heights
 public:
@@ -78,27 +80,23 @@ public:
     }
 
     iterator insert(const key_type& key) {
-        ++size_;
         if (root_node_ == nullptr) { return create_root_node(key); }
 
         auto curr_node = root_node_;
         while(curr_node) {
             if (comp_(key, curr_node->key_)) {
                 if (!curr_node->left_) {
-                    curr_node->left_ = new node_type{key, curr_node};
-                    correct_heights(curr_node);
+                    create_node(curr_node, key, childPosition::Left);
                     break;
                 }
                 curr_node = curr_node->left_;
             } else if (comp_(curr_node->key_, key)) {
                 if (!curr_node->right_) {
-                    curr_node->right_ = new node_type{key, curr_node};
-                    correct_heights(curr_node);
+                    create_node(curr_node, key, childPosition::Right);
                     break;
                 }
                 curr_node = curr_node->right_;
             } else {
-                --size_;
                 return iterator{curr_node};
             }
         }
@@ -108,7 +106,7 @@ public:
 
         return iterator{curr_node};
     }
-    
+
     size_type erase(const key_type& key) {
         auto erase_it = find(key);
         if (erase_it == end()) { return 0; }
@@ -304,6 +302,16 @@ private:
 
         return iterator{root_node_};
     }
+ 
+    void create_node(pointer curr_node, const key_type& key, childPosition pos) {
+        if (pos == childPosition::Left) {
+            curr_node->left_ = new node_type{key, curr_node};
+        } else {
+            curr_node->right_ = new node_type{key, curr_node};
+        }
+        correct_heights(curr_node);
+        ++size_;
+    }
 
     static bool is_child(pointer pt) {
         assert(pt);
@@ -319,7 +327,6 @@ private:
             start_ptr = start_ptr->left_;
         }
     }
-
 private:
     pointer root_node_ {nullptr};
     end_node end_node_;

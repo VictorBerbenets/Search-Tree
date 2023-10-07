@@ -27,23 +27,23 @@ public:
 
     const_pointer get_pointer() const noexcept { return ptr_; }
 
-    TreeIterator& operator++() noexcept{
+    TreeIterator& operator++() {
         ptr_ = ptr_->successor();
         return *this;
     }
 
-    TreeIterator& operator--() noexcept {
+    TreeIterator& operator--() {
         ptr_ = ptr_->predecessor();
         return *this;
     }
 
-    TreeIterator operator++(int n) noexcept {
+    TreeIterator operator++(int n) {
         auto tmp = *this;
         ++(*this);
         return tmp;
     }
 
-    TreeIterator operator--(int n) noexcept {
+    TreeIterator operator--(int n) {
         auto tmp = *this;
         --(*this);
         return tmp;
