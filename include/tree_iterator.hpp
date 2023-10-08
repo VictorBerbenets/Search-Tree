@@ -49,7 +49,7 @@ public:
         return tmp;
     }
 
-    KeyT operator*() const noexcept { return ptr_->key_; }
+    const KeyT& operator*() const noexcept { return ptr_->key_; }
     const KeyT* operator->() const noexcept { return std::addressof(ptr_->key_); }
 private:
 /*------------------------------------------------------------------*/

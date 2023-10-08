@@ -33,7 +33,7 @@ public:
 private:
     using end_node    = detail::EndNode<key_type>;
     using end_pointer = end_node*;
-    
+
     enum class childPosition : char {Left = 1, Right = 2};
 
     static constexpr difference_type DIFF_HEIGHT = 2; // difference between two subtree heights
@@ -110,7 +110,7 @@ public:
     size_type erase(const key_type& key) {
         auto erase_it = find(key);
         if (erase_it == end()) { return 0; }
-        
+        std::cout << "KEY TO REMOVE = " << key << std::endl;
         auto erase_ptr = const_cast<pointer>(erase_it.get_pointer());
         auto replace_ptr = erase_ptr->left_ ? erase_ptr->get_most_right() : nullptr;
         if (replace_ptr) {
@@ -139,7 +139,7 @@ public:
 
 
     size_type size() const noexcept { return size_; };
-    
+
     bool empty() const noexcept { return size_ == 0; };
 
     const_iterator begin()  const noexcept { return iterator{begin_node_}; }
@@ -158,8 +158,7 @@ private:
         pt->parent_ = local_child;
         local_child->right_ = pt;
 
-        set_child_height(local_child->right_);
-        correct_heights(local_child);
+        correct_heights(local_child->right_);
 
         return local_child;
     }
@@ -175,8 +174,7 @@ private:
         pt->parent_ = local_child;
         local_child->left_ = pt;
 
-        set_child_height(local_child->left_);
-        correct_heights(local_child);
+        correct_heights(local_child->left_);
 
         return local_child;
     }
@@ -186,7 +184,7 @@ private:
 
         auto local_root = pt->left_;
         auto local_root_child = local_root->right_;
-        
+
         pt->left_ = local_root_child->right_;
         if (local_root_child->right_) {
             local_root_child->right_->parent_ = pt;
@@ -201,10 +199,9 @@ private:
 
         pt->parent_ = local_root->parent_ = local_root_child;
 
-        set_child_height(local_root_child->left_);
         set_child_height(local_root_child->right_);
-        correct_heights(local_root_child);
- 
+        correct_heights(local_root_child->left_);
+
         return local_root_child;
     }
 
@@ -213,7 +210,7 @@ private:
 
         auto local_root = pt->right_;
         auto local_root_child = local_root->left_;
-        
+
         pt->right_ = local_root_child->left_;
         if (local_root_child->left_) {
             local_root_child->left_->parent_ = pt;
@@ -227,14 +224,13 @@ private:
         local_root_child->right_ = local_root;
 
         pt->parent_ = local_root->parent_ = local_root_child;
-        
-        set_child_height(local_root_child->left_);
+
         set_child_height(local_root_child->right_);
-        correct_heights(local_root_child);
- 
+        correct_heights(local_root_child->left_);
+
         return local_root_child;
     }
-    
+
     void set_child_height(pointer child) {
         child->height_ = is_child(child) ? 0 : determine_height(child);
     }
@@ -258,8 +254,11 @@ private:
             pt = pt->parent_;
         }
     }
-    
+
     size_type determine_height(pointer pt) const {
+        if (!pt->left_ && !pt->right_) {
+            return 0;
+        }
         size_type left_h  = height(pt->left_);
         size_type right_h = height(pt->right_);
         return std::max(left_h, right_h) + 1;
@@ -293,7 +292,7 @@ private:
     }
 
     bool is_disbalance(difference_type diff) const noexcept { return diff == DIFF_HEIGHT; }
- 
+
     iterator create_root_node(const key_type& key) {
         root_node_ = new node_type{key};
         end_node_.left_ = root_node_;
@@ -302,7 +301,7 @@ private:
 
         return iterator{root_node_};
     }
- 
+
     void create_node(pointer curr_node, const key_type& key, childPosition pos) {
         if (pos == childPosition::Left) {
             curr_node->left_ = new node_type{key, curr_node};
