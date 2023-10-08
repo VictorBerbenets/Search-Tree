@@ -16,6 +16,8 @@ struct Node {
     : key_ {key},
       parent_ {parent} {};
 
+    virtual ~Node() {};
+
     const_pointer predecessor() const { /*predecessor - the node that lies just behind the given node*/
         if (left_) {
             return get_most_right();
@@ -59,6 +61,7 @@ struct Node {
     }
 
     auto go_upper_inc() const {
+        assert(parent_);
         auto tmp = parent_;
         auto copy = this;
         while(copy == tmp->right_) {

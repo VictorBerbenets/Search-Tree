@@ -29,7 +29,7 @@ public:
     using pointer         = node_type*;
     using const_pointer   = const node_type*;
     using iterator        = detail::TreeIterator<key_type>;
-    using const_iterator  = const iterator;
+    using const_iterator  = detail::TreeIterator<key_type>;
 private:
     using end_node    = detail::EndNode<key_type>;
     using end_pointer = end_node*;
@@ -67,6 +67,7 @@ public:
 
     const_iterator find(const key_type& key) const {
         auto curr_node = root_node_;
+        assert(curr_node);
         while(curr_node) {
             if (comp_(key, curr_node->key_)) {
                 curr_node = curr_node->left_;
@@ -118,20 +119,27 @@ public:
         auto erase_it = find(*pos);
         if (erase_it == end()) { return end(); }
 
-        auto erase_ptr    = const_cast<pointer>(erase_it.get_pointer());
-        auto replace_ptr  = erase_ptr->left_ ? erase_ptr->get_most_right() : nullptr;
-        iterator next_iter{nullptr};
+        auto erase_ptr     = const_cast<pointer>(erase_it.get_pointer());
+        auto replace_ptr   = erase_ptr->left_ ? erase_ptr->get_most_right() : nullptr;
+        iterator next_iter = ++iterator{erase_ptr};
         if (replace_ptr) {
-            next_iter       = ++iterator{replace_ptr};
             erase_ptr->key_ = replace_ptr->key_;
             erase_node(replace_ptr, replace_ptr->left_);
         } else {
-            next_iter = ++iterator{erase_ptr};
             erase_node(erase_ptr, erase_ptr->right_);
         }
-        begin_node_ = get_most_left(root_node_);
+        begin_node_ = get_most_left(end_ptr_);
+      //  std::cout << *this << std::endl;
         --size_;
         return next_iter;
+    }
+
+    iterator erase(const_iterator begin, const_iterator end) {
+        iterator tmp{nullptr};
+        for (; begin != end; ++begin) {
+            tmp = erase(begin);
+        }
+        return tmp;
     }
 
     void graph_dump(const std::string& file_name = "graph.png") const {
@@ -293,13 +301,16 @@ private:
 
     bool is_disbalance(difference_type diff) const noexcept { return diff == DIFF_HEIGHT; }
 
-    void erase_node(pointer erase_ptr, pointer child) { // erase_ptr doesn't have at least one child
+    void erase_node(pointer& erase_ptr, pointer child) { // erase_ptr doesn't have at least one child
         auto erase_parent = erase_ptr->parent_;
         if (child) {
             (erase_parent->left_ == erase_ptr ? erase_parent->left_ : erase_parent->right_) = child;
             child->parent_ = erase_parent;
         } else {
             (erase_parent->left_ == erase_ptr ? erase_parent->left_ : erase_parent->right_) = nullptr;
+        }
+        if (erase_ptr == root_node_) {
+            root_node_ = child;
         }
         delete erase_ptr;
         correct_heights(erase_parent);
