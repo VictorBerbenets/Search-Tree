@@ -80,8 +80,14 @@ public:
         return cend();
     }
 
-    iterator insert(const key_type& key) {
-        if (root_node_ == nullptr) { return create_root_node(key); }
+    void insert(std::initializer_list<value_type> ilist) {
+        for(auto il_it = ilist.begin(); il_it != ilist.end(); ++il_it) {
+            insert(*il_it);
+        }
+    }
+
+    std::pair<iterator, bool> insert(const key_type& key) {
+        if (root_node_ == nullptr) { return {create_root_node(key), true}; }
 
         auto curr_node = root_node_;
         while(curr_node) {
@@ -98,14 +104,14 @@ public:
                 }
                 curr_node = curr_node->right_;
             } else {
-                return iterator{curr_node};
+                return {iterator{curr_node}, false};
             }
         }
 
         balance_tree(curr_node);
         begin_node_ = get_most_left(begin_node_);
 
-        return iterator{curr_node};
+        return {iterator{curr_node}, true};
     }
 
     size_type erase(const key_type& key) {
@@ -123,13 +129,13 @@ public:
         auto replace_ptr   = erase_ptr->left_ ? erase_ptr->get_most_right() : nullptr;
         iterator next_iter = ++iterator{erase_ptr};
         if (replace_ptr) {
+            std::cout << "AAA\n";
             erase_ptr->key_ = replace_ptr->key_;
             erase_node(replace_ptr, replace_ptr->left_);
         } else {
             erase_node(erase_ptr, erase_ptr->right_);
         }
         begin_node_ = get_most_left(end_ptr_);
-      //  std::cout << *this << std::endl;
         --size_;
         return next_iter;
     }
