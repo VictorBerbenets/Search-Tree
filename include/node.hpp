@@ -12,10 +12,10 @@ struct Node {
     using pointer       = Node*;
     using const_pointer = const Node*;
 
-    Node(KeyT key, pointer parent = nullptr)
+    Node(const KeyT& key, pointer parent = nullptr)
     : key_ {key},
       parent_ {parent} {};
-    
+
     const_pointer predecessor() const { /*predecessor - the node that lies just behind the given node*/
         if (left_) {
             return get_most_right();

@@ -108,28 +108,30 @@ public:
     }
 
     size_type erase(const key_type& key) {
-        auto erase_it = find(key);
-        if (erase_it == end()) { return 0; }
-        std::cout << "KEY TO REMOVE = " << key << std::endl;
-        auto erase_ptr = const_cast<pointer>(erase_it.get_pointer());
-        auto replace_ptr = erase_ptr->left_ ? erase_ptr->get_most_right() : nullptr;
+        size_type save_size = size();
+        node_type tmp_node{key};
+        erase(const_iterator{&tmp_node});
+        return size() != save_size;
+    }
+
+    iterator erase(const_iterator pos) {
+        auto erase_it = find(*pos);
+        if (erase_it == end()) { return end(); }
+
+        auto erase_ptr    = const_cast<pointer>(erase_it.get_pointer());
+        auto replace_ptr  = erase_ptr->left_ ? erase_ptr->get_most_right() : nullptr;
+        iterator next_iter{nullptr};
         if (replace_ptr) {
-            auto rep_parent = replace_ptr->parent_;
-            erase_ptr->key_ = std::exchange(replace_ptr->key_, 0);
-            (rep_parent->left_ == replace_ptr ? rep_parent->left_ : rep_parent->right_) = nullptr;
-            delete replace_ptr;
-            balance_tree(rep_parent);
+            next_iter       = ++iterator{replace_ptr};
+            erase_ptr->key_ = replace_ptr->key_;
+            erase_node(replace_ptr, replace_ptr->left_);
         } else {
-            auto erase_parent = erase_ptr->parent_;
-            (erase_parent->left_ == erase_ptr ? erase_parent->left_ : erase_parent->right_) = erase_ptr->right_;
-            if (erase_ptr->right_) {
-                erase_ptr->right_->parent_ = erase_parent;
-            }
-            delete erase_ptr;
-            balance_tree(erase_parent);
+            next_iter = ++iterator{erase_ptr};
+            erase_node(erase_ptr, erase_ptr->right_);
         }
         begin_node_ = get_most_left(root_node_);
-        return 1;
+        --size_;
+        return next_iter;
     }
 
     void graph_dump(const std::string& file_name = "graph.png") const {
@@ -137,10 +139,8 @@ public:
        graph.graph_dump(file_name);
     }
 
-
     size_type size() const noexcept { return size_; };
-
-    bool empty() const noexcept { return size_ == 0; };
+    bool empty() const noexcept     { return size_ == 0; };
 
     const_iterator begin()  const noexcept { return iterator{begin_node_}; }
     const_iterator cbegin() const noexcept { return begin(); }
@@ -292,6 +292,19 @@ private:
     }
 
     bool is_disbalance(difference_type diff) const noexcept { return diff == DIFF_HEIGHT; }
+
+    void erase_node(pointer erase_ptr, pointer child) { // erase_ptr doesn't have at least one child
+        auto erase_parent = erase_ptr->parent_;
+        if (child) {
+            (erase_parent->left_ == erase_ptr ? erase_parent->left_ : erase_parent->right_) = child;
+            child->parent_ = erase_parent;
+        } else {
+            (erase_parent->left_ == erase_ptr ? erase_parent->left_ : erase_parent->right_) = nullptr;
+        }
+        delete erase_ptr;
+        correct_heights(erase_parent);
+        balance_tree(erase_parent);
+    }
 
     iterator create_root_node(const key_type& key) {
         root_node_ = new node_type{key};
