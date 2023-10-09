@@ -80,7 +80,6 @@ template<typename KeyT>
 struct EndNode: public Node<KeyT> {
     explicit EndNode(Node<KeyT>::pointer root = nullptr)
     : Node<KeyT>{KeyT(), root} {}
-
 };
 
 } // <--- namespace detail

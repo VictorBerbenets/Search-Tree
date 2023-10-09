@@ -62,11 +62,16 @@ public:
     : root_node_  {std::exchange(rhs.root_node_, nullptr)},
       begin_node_ {std::exchange(rhs.begin_node_, rhs.end_ptr_)},
       size_       {std::exchange(rhs.size_, 0)},
-      comp_       {rhs.comp_} {}
+      comp_       {rhs.comp_} {
+        rebalance_tree_pointers();
+    }
 
     ~AVL_Tree() { clear_tree(); }
 
     AVL_Tree& operator=(const AVL_Tree& rhs) {
+        if (this == std::addressof(rhs)) {
+            return *this;
+        }
 
     }
 
@@ -388,9 +393,8 @@ private:
         if (root_node_) {
             root_node_->parent_ = end_ptr_;
             end_ptr_->left_     = root_node_;
-        }
-        if (!size_) {
-            begin_node_ = end_ptr_;
+        } else {
+            begin_node_     = end_ptr_;
             end_ptr_->left_ = nullptr;
         }
     }
