@@ -57,8 +57,7 @@ public:
 
     AVL_Tree(AVL_Tree&& rhs)
     : root_node_  {std::exchange(rhs.root_node_, nullptr)},
-      end_node_   {rhs.end_node_},
-      end_ptr_    {rhs.end_ptr_},
+      //end_ptr_    {end_node_},
       begin_node_ {std::exchange(rhs.begin_node_, rhs.end_ptr_)},
       comp_       {rhs.comp_},
       size_       {std::exchange(rhs.size_, 0)} {}
@@ -76,11 +75,17 @@ public:
 
     void swap(AVL_Tree& rhs) noexcept(std::is_nothrow_swappable<Compare>::value) {
         std::swap(root_node_, rhs.root_node_);
-        std::swap(end_node_, rhs.end_node_);
-        std::swap(end_ptr_, rhs.end_ptr_);
         std::swap(begin_node_, rhs.begin_node_);
         std::swap(comp_, rhs.comp_);
         std::swap(size_, rhs.size_);
+        if (root_node_) {
+            root_node_->parent_ = end_ptr_;
+            end_ptr_->left_     = root_node_;
+        }
+        if (!size_) {
+            begin_node_ = end_ptr_;
+            end_ptr_->left_ = nullptr;
+        }
     }
 
     const_iterator find(const key_type& key) const {
