@@ -42,8 +42,7 @@ private:
 public:
     template <typename Iter>
     AVL_Tree(Iter begin, Iter end, const Compare& comp = Compare())
-    : comp_ {comp},
-      size_ {0} {
+    : comp_ {comp} {
         for (; begin != end; ++begin) {
             insert(*begin);
         }
@@ -53,14 +52,13 @@ public:
     : AVL_Tree {ls.begin(), ls.end(), comp} {}
 
     AVL_Tree(const Compare& comp = Compare())
-    : comp_ {comp},
-      size_ {0} {}
+    : comp_ {comp} {}
 
     AVL_Tree(AVL_Tree&& rhs)
     : root_node_  {std::exchange(rhs.root_node_, nullptr)},
       begin_node_ {std::exchange(rhs.begin_node_, rhs.end_ptr_)},
-      comp_       {rhs.comp_},
-      size_       {std::exchange(rhs.size_, 0)} {}
+      size_       {std::exchange(rhs.size_, 0)},
+      comp_       {rhs.comp_} {}
 
     ~AVL_Tree() { clear_tree(); }
 
@@ -68,7 +66,7 @@ public:
 
     }
 
-    AVL_Tree& operator=(AVL_Tree&& rhs) noexcept(noexcept(swap(rhs))) {
+    AVL_Tree& operator=(AVL_Tree&& rhs) noexcept(noexcept(swap())) {
         swap(rhs);
         return *this;
     }
@@ -422,12 +420,12 @@ private:
         }
     }
 private:
-    pointer root_node_ {nullptr};
-    end_node end_node_;
+    pointer root_node_ {};
+    end_node end_node_ {};
     end_pointer end_ptr_ {std::addressof(end_node_)};
     pointer begin_node_ {std::addressof(end_node_)};
+    size_type size_ {0};
     Compare comp_;
-    size_type size_;
 }; // <--- class AVL_Tree
 
 template<typename KeyT, typename Compare>
