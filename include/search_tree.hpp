@@ -5,6 +5,7 @@
 #include <utility>
 #include <memory>
 #include <type_traits>
+#include <algorithm>
 #include <initializer_list>
 #include <cstddef>
 #include <cassert>
@@ -435,6 +436,12 @@ std::ostream& operator<<(std::ostream& os, const AVL_Tree<KeyT, Compare>& rhs) {
         os << val << ' ';
     }
     return os << std::endl;
+}
+
+template<typename KeyT, typename Compare>
+bool operator==(const AVL_Tree<KeyT, Compare>& lhs, const AVL_Tree<KeyT, Compare>& rhs) {
+    return lhs.size() == rhs.size() &&
+           std::equal(lhs.cbegin(), lhs.cend(), rhs.cbegin());
 }
 
 } // <--- namespace yLAB

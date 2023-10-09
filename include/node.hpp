@@ -27,30 +27,19 @@ struct Node {
 
     const_pointer successor() const { /*successor - the node that lies just after the given node*/
         if (right_) {
-            //std::cout << "MOST LEFT\n";
             return get_most_left(right_);
         }
         return go_upper_inc();
     }
 
     auto get_most_right(pointer start) const {
-        //auto tmp = left_;
         while(start->right_) {
             start = start->right_;
         }
         return start;
     }
-#if 0
-    auto get_most_left() const {
-        auto tmp = right_;
-        while(tmp->left_) {
-            tmp = tmp->left_;
-        }
-        return tmp;
-    }
-    #endif
+
     auto get_most_left(pointer start) const {
-       // auto tmp = right_;
         while(start->left_) {
             start = start->left_;
         }
