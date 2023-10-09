@@ -30,7 +30,7 @@ public:
     using pointer         = node_type*;
     using const_pointer   = const node_type*;
     using iterator        = detail::TreeIterator<key_type>;
-    using const_iterator  = detail::TreeIterator<key_type>;
+    using const_iterator  = iterator;
 private:
     using end_node    = detail::EndNode<key_type>;
     using end_pointer = end_node*;
@@ -57,7 +57,6 @@ public:
 
     AVL_Tree(AVL_Tree&& rhs)
     : root_node_  {std::exchange(rhs.root_node_, nullptr)},
-      //end_ptr_    {end_node_},
       begin_node_ {std::exchange(rhs.begin_node_, rhs.end_ptr_)},
       comp_       {rhs.comp_},
       size_       {std::exchange(rhs.size_, 0)} {}
@@ -78,14 +77,9 @@ public:
         std::swap(begin_node_, rhs.begin_node_);
         std::swap(comp_, rhs.comp_);
         std::swap(size_, rhs.size_);
-        if (root_node_) {
-            root_node_->parent_ = end_ptr_;
-            end_ptr_->left_     = root_node_;
-        }
-        if (!size_) {
-            begin_node_ = end_ptr_;
-            end_ptr_->left_ = nullptr;
-        }
+
+        rebalance_tree_pointers();
+        rhs.rebalance_tree_pointers();
     }
 
     const_iterator find(const key_type& key) const {
@@ -104,7 +98,6 @@ public:
 
     void insert(std::initializer_list<value_type> ilist) {
         for(auto il_it = ilist.begin(); il_it != ilist.end(); ++il_it) {
-            std::cout << "it = " << *il_it << std::endl;
             insert(*il_it);
         }
     }
@@ -141,7 +134,7 @@ public:
         }
 
         balance_tree(curr_node);
-        begin_node_ = get_most_left(begin_node_);
+        begin_node_ = begin_node_->get_most_left(begin_node_);
 
         return {iterator{curr_node}, true};
     }
@@ -158,7 +151,7 @@ public:
         if (erase_it == cend()) { return end(); }
 
         auto erase_ptr     = const_cast<pointer>(erase_it.get_pointer());
-        auto replace_ptr   = erase_ptr->left_ ? erase_ptr->get_most_right() : nullptr;
+        auto replace_ptr   = erase_ptr->left_ ? erase_ptr->get_most_right(erase_ptr->left_) : nullptr;
         pointer start_balance{nullptr};
         iterator next_iter = ++iterator{erase_ptr};
         if (replace_ptr) {
@@ -172,7 +165,7 @@ public:
         delete erase_ptr;
         correct_heights(start_balance);
         balance_tree(start_balance);
-        begin_node_ = get_most_left(end_ptr_);
+        begin_node_ = end_ptr_->get_most_left(end_ptr_);
         --size_;
 
         return next_iter;
@@ -210,9 +203,9 @@ public:
        graph.graph_dump(file_name);
     }
 
-    const_iterator begin()  const noexcept { return iterator{begin_node_}; }
+    const_iterator begin()  const noexcept { return const_iterator{begin_node_}; }
     const_iterator cbegin() const noexcept { return begin(); }
-    const_iterator end()    const noexcept { return iterator{end_ptr_}; }
+    const_iterator end()    const noexcept { return const_iterator{end_ptr_}; }
     const_iterator cend()   const noexcept { return end(); }
 private:
     pointer right_turn(pointer pt) {
@@ -380,6 +373,17 @@ private:
         balance_tree(erase_parent);
     }
 
+    void rebalance_tree_pointers() {
+        if (root_node_) {
+            root_node_->parent_ = end_ptr_;
+            end_ptr_->left_     = root_node_;
+        }
+        if (!size_) {
+            begin_node_ = end_ptr_;
+            end_ptr_->left_ = nullptr;
+        }
+    }
+
     iterator create_root_node(const key_type& key) {
         root_node_ = new node_type{key};
         end_node_.left_ = root_node_;
@@ -402,16 +406,6 @@ private:
     static bool is_child(pointer pt) {
         assert(pt);
         return pt->left_ == nullptr && pt->right_ == nullptr;
-    }
-
-    static pointer get_most_left(pointer start_ptr) {
-        assert(start_ptr);
-        while(true) {
-            if (start_ptr->left_ == nullptr) {
-                return start_ptr;
-            }
-            start_ptr = start_ptr->left_;
-        }
     }
 
     void clear_tree() noexcept {
