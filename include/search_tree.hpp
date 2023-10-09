@@ -54,6 +54,10 @@ public:
     AVL_Tree(const Compare& comp = Compare())
     : comp_ {comp} {}
 
+    AVL_Tree(const AVL_Tree& rhs) {
+
+    }
+
     AVL_Tree(AVL_Tree&& rhs)
     : root_node_  {std::exchange(rhs.root_node_, nullptr)},
       begin_node_ {std::exchange(rhs.begin_node_, rhs.end_ptr_)},
@@ -95,16 +99,16 @@ public:
         return cend();
     }
 
-    void insert(std::initializer_list<value_type> ilist) {
-        for(auto il_it = ilist.begin(); il_it != ilist.end(); ++il_it) {
-            insert(*il_it);
-        }
-    }
-
     template<typename... Args>
     std::pair<iterator, bool> emplace(Args... args) {
         key_type key(std::forward<Args>(args)...);
         return insert(key);
+    }
+
+    void insert(std::initializer_list<value_type> ilist) {
+        for(auto il_it = ilist.begin(); il_it != ilist.end(); ++il_it) {
+            insert(*il_it);
+        }
     }
 
     std::pair<iterator, bool> insert(const key_type& key) {
@@ -149,8 +153,8 @@ public:
         auto erase_it = find(*pos);
         if (erase_it == cend()) { return end(); }
 
-        auto erase_ptr     = const_cast<pointer>(erase_it.get_pointer());
-        auto replace_ptr   = erase_ptr->left_ ? erase_ptr->get_most_right(erase_ptr->left_) : nullptr;
+        auto erase_ptr   = const_cast<pointer>(erase_it.get_pointer());
+        auto replace_ptr = erase_ptr->left_ ? erase_ptr->get_most_right(erase_ptr->left_) : nullptr;
         pointer start_balance{nullptr};
         iterator next_iter = ++iterator{erase_ptr};
         if (replace_ptr) {
@@ -176,6 +180,14 @@ public:
             begin = erase(begin);
         }
         return begin;
+    }
+
+    const_iterator lower_bound(const key_type& key) const {
+
+    }
+
+    const_iterator upper_bound(const key_type& key) const {
+
     }
 
     bool contains(const key_type& key) const {
