@@ -40,7 +40,8 @@ private:
 public:
     template <typename Iter>
     AVL_Tree(Iter begin, Iter end, const Compare& comp = Compare())
-    : comp_ {comp} {
+    : comp_ {comp},
+      size_ {0} {
         for (; begin != end; ++begin) {
             insert(*begin);
         }
@@ -50,12 +51,14 @@ public:
     : AVL_Tree {ls.begin(), ls.end(), comp} {}
 
     AVL_Tree(const Compare& comp = Compare())
-    : comp_ {comp} {}
+    : comp_ {comp},
+      size_ {0} {}
 
     ~AVL_Tree() {
         for (pointer curr_node = root_node_, tmp{0}; curr_node; curr_node = tmp) {
             if (!curr_node->left_) {
                 tmp = curr_node->right_;
+                //std::cout << "DELETING " << curr_node->key_ << std::endl;
                 delete curr_node;
             } else {
                 tmp = curr_node->left_;
@@ -82,12 +85,16 @@ public:
 
     void insert(std::initializer_list<value_type> ilist) {
         for(auto il_it = ilist.begin(); il_it != ilist.end(); ++il_it) {
+            std::cout << "it = " << *il_it << std::endl;
             insert(*il_it);
         }
     }
 
     std::pair<iterator, bool> insert(const key_type& key) {
-        if (root_node_ == nullptr) { return {create_root_node(key), true}; }
+        if (root_node_ == nullptr) {
+            ++size_;
+            return {create_root_node(key), true};
+        }
 
         auto curr_node = root_node_;
         while(curr_node) {
@@ -127,25 +134,38 @@ public:
 
         auto erase_ptr     = const_cast<pointer>(erase_it.get_pointer());
         auto replace_ptr   = erase_ptr->left_ ? erase_ptr->get_most_right() : nullptr;
+        auto erase_parent  = erase_ptr->parent_;
         iterator next_iter = ++iterator{erase_ptr};
+        std::cout << "removing " << *pos << std::endl;
         if (replace_ptr) {
-            std::cout << "AAA\n";
-            erase_ptr->key_ = replace_ptr->key_;
-            erase_node(replace_ptr, replace_ptr->left_);
+            std::cout << "REPLACE KEY = " << replace_ptr->key_ << std::endl;
+            set_child_parent_connection(erase_ptr, replace_ptr);
+            replace_ptr->left_ = erase_ptr->left_;
+            if (erase_ptr->left_) {
+                erase_ptr->left_->parent_ = replace_ptr;
+            }
+            replace_ptr->right_ = erase_ptr->right_;
+            if (erase_ptr->left_) {
+                erase_ptr->right_->parent_ = replace_ptr;
+            }
         } else {
-            erase_node(erase_ptr, erase_ptr->right_);
+            set_child_parent_connection(erase_ptr, erase_ptr->right_);
         }
+        delete erase_ptr;
+        correct_heights(erase_parent);
+        balance_tree(erase_parent);
         begin_node_ = get_most_left(end_ptr_);
         --size_;
+
         return next_iter;
     }
 
     iterator erase(const_iterator begin, const_iterator end) {
         iterator tmp{nullptr};
-        for (; begin != end; ++begin) {
-            tmp = erase(begin);
+        for (; begin != end; ) {
+            begin = erase(begin);
         }
-        return tmp;
+        return begin;
     }
 
     void graph_dump(const std::string& file_name = "graph.png") const {
@@ -254,10 +274,14 @@ private:
 
         if (parent != end_ptr_) {
             (parent->left_ == pt ? parent->left_ : parent->right_) = child;
-            child->parent_ = parent;
+            if (child) {
+                child->parent_ = parent;
+            }
         } else {
             root_node_ = child;
-            root_node_->parent_ = end_ptr_;
+            if (root_node_) {
+                root_node_->parent_ = end_ptr_;
+            }
             end_ptr_->left_ = root_node_;
         }
     }
