@@ -45,7 +45,7 @@ class tree_painter {
         graph_file << "edge [color = " << color << ", arrowhead = " << arrowhead << ", arrowsize = "
                    << arrow_sz << ", penwidth = " << pnwidth << "];\n";
     }
-    
+
     void create_node(std::ofstream& graph_file, pointer elem, size_type curr_node) const {
         // to do
         if (std::same_as<decltype(elem), const end_node_ptr>) {

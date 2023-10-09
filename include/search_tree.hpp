@@ -134,26 +134,19 @@ public:
 
         auto erase_ptr     = const_cast<pointer>(erase_it.get_pointer());
         auto replace_ptr   = erase_ptr->left_ ? erase_ptr->get_most_right() : nullptr;
-        auto erase_parent  = erase_ptr->parent_;
+        pointer start_balance{nullptr};
         iterator next_iter = ++iterator{erase_ptr};
-        std::cout << "removing " << *pos << std::endl;
         if (replace_ptr) {
-            std::cout << "REPLACE KEY = " << replace_ptr->key_ << std::endl;
+            start_balance = replace_ptr;
             set_child_parent_connection(erase_ptr, replace_ptr);
-            replace_ptr->left_ = erase_ptr->left_;
-            if (erase_ptr->left_) {
-                erase_ptr->left_->parent_ = replace_ptr;
-            }
-            replace_ptr->right_ = erase_ptr->right_;
-            if (erase_ptr->left_) {
-                erase_ptr->right_->parent_ = replace_ptr;
-            }
+            connect_two_nodes(replace_ptr, erase_ptr->right_, childPosition::Right);
         } else {
+            start_balance = erase_ptr->parent_;
             set_child_parent_connection(erase_ptr, erase_ptr->right_);
         }
         delete erase_ptr;
-        correct_heights(erase_parent);
-        balance_tree(erase_parent);
+        correct_heights(start_balance);
+        balance_tree(start_balance);
         begin_node_ = get_most_left(end_ptr_);
         --size_;
 
@@ -219,14 +212,8 @@ private:
         auto local_root = pt->left_;
         auto local_root_child = local_root->right_;
 
-        pt->left_ = local_root_child->right_;
-        if (local_root_child->right_) {
-            local_root_child->right_->parent_ = pt;
-        }
-        local_root->right_ = local_root_child->left_;
-        if (local_root_child->left_) {
-            local_root_child->left_->parent_ = local_root;
-        }
+        connect_two_nodes(pt, local_root_child->right_, childPosition::Left);
+        connect_two_nodes(local_root, local_root_child->left_, childPosition::Right);
 
         local_root_child->right_ = pt;
         local_root_child->left_  = local_root;
@@ -245,14 +232,8 @@ private:
         auto local_root = pt->right_;
         auto local_root_child = local_root->left_;
 
-        pt->right_ = local_root_child->left_;
-        if (local_root_child->left_) {
-            local_root_child->left_->parent_ = pt;
-        }
-        local_root->left_ = local_root_child->right_;
-        if (local_root_child->right_) {
-            local_root_child->right_->parent_ = local_root;
-        }
+        connect_two_nodes(pt, local_root_child->left_, childPosition::Right);
+        connect_two_nodes(local_root, local_root_child->right_, childPosition::Left);
 
         local_root_child->left_  = pt;
         local_root_child->right_ = local_root;
@@ -267,6 +248,17 @@ private:
 
     void set_child_height(pointer child) {
         child->height_ = is_child(child) ? 0 : determine_height(child);
+    }
+
+    void connect_two_nodes(pointer first_node, pointer second_node, childPosition pos) {
+        if(pos == childPosition::Left) {
+            first_node->left_ = second_node;
+        } else {
+            first_node->right_ = second_node;
+        }
+        if (second_node) {
+            second_node->parent_ = first_node;
+        }
     }
 
     void set_child_parent_connection(pointer pt, pointer child) {
