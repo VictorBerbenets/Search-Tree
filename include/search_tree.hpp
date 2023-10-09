@@ -4,6 +4,7 @@
 #include <iostream>
 #include <utility>
 #include <memory>
+#include <type_traits>
 #include <initializer_list>
 #include <cstddef>
 #include <cassert>
@@ -68,13 +69,22 @@ public:
 
     }
 
-    AVL_Tree& operator=(AVL_Tree&& rhs) {
+    AVL_Tree& operator=(AVL_Tree&& rhs) noexcept(noexcept(swap(rhs))) {
+        swap(rhs);
+        return *this;
+    }
 
+    void swap(AVL_Tree& rhs) noexcept(std::is_nothrow_swappable<Compare>::value) {
+        std::swap(root_node_, rhs.root_node_);
+        std::swap(end_node_, rhs.end_node_);
+        std::swap(end_ptr_, rhs.end_ptr_);
+        std::swap(begin_node_, rhs.begin_node_);
+        std::swap(comp_, rhs.comp_);
+        std::swap(size_, rhs.size_);
     }
 
     const_iterator find(const key_type& key) const {
         auto curr_node = root_node_;
-        //assert(curr_node);
         while(curr_node) {
             if (comp_(key, curr_node->key_)) {
                 curr_node = curr_node->left_;
@@ -96,12 +106,8 @@ public:
 
     template<typename... Args>
     std::pair<iterator, bool> emplace(Args... args) {
-
-    }
-
-    template<typename... Args>
-    iterator emplace_hint(const_iterator hint, Args... args) {
-
+        key_type key(std::forward<Args>(args)...);
+        return insert(key);
     }
 
     std::pair<iterator, bool> insert(const key_type& key) {
@@ -418,7 +424,7 @@ private:
 private:
     pointer root_node_ {nullptr};
     end_node end_node_;
-    const end_pointer end_ptr_ {std::addressof(end_node_)};
+    end_pointer end_ptr_ {std::addressof(end_node_)};
     pointer begin_node_ {std::addressof(end_node_)};
     Compare comp_;
     size_type size_;

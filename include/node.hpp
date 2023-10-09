@@ -81,7 +81,7 @@ struct Node {
 template<typename KeyT>
 struct EndNode: public Node<KeyT> {
     explicit EndNode(Node<KeyT>::pointer root = nullptr)
-    : Node<KeyT>{0, root} {}
+    : Node<KeyT>{KeyT(), root} {}
 
 };
 
