@@ -54,23 +54,27 @@ public:
     : comp_ {comp},
       size_ {0} {}
 
-    ~AVL_Tree() {
-        for (pointer curr_node = root_node_, tmp{0}; curr_node; curr_node = tmp) {
-            if (!curr_node->left_) {
-                tmp = curr_node->right_;
-                //std::cout << "DELETING " << curr_node->key_ << std::endl;
-                delete curr_node;
-            } else {
-                tmp = curr_node->left_;
-                curr_node->left_ = tmp->right_;
-                tmp->right_ = curr_node;
-            }
-        }
+    AVL_Tree(AVL_Tree&& rhs)
+    : root_node_  {std::exchange(rhs.root_node_, nullptr)},
+      end_node_   {rhs.end_node_},
+      end_ptr_    {rhs.end_ptr_},
+      begin_node_ {std::exchange(rhs.begin_node_, rhs.end_ptr_)},
+      comp_       {rhs.comp_},
+      size_       {std::exchange(rhs.size_, 0)} {}
+
+    ~AVL_Tree() { clear_tree(); }
+
+    AVL_Tree& operator=(const AVL_Tree& rhs) {
+
+    }
+
+    AVL_Tree& operator=(AVL_Tree&& rhs) {
+
     }
 
     const_iterator find(const key_type& key) const {
         auto curr_node = root_node_;
-        assert(curr_node);
+        //assert(curr_node);
         while(curr_node) {
             if (comp_(key, curr_node->key_)) {
                 curr_node = curr_node->left_;
@@ -88,6 +92,16 @@ public:
             std::cout << "it = " << *il_it << std::endl;
             insert(*il_it);
         }
+    }
+
+    template<typename... Args>
+    std::pair<iterator, bool> emplace(Args... args) {
+
+    }
+
+    template<typename... Args>
+    iterator emplace_hint(const_iterator hint, Args... args) {
+
     }
 
     std::pair<iterator, bool> insert(const key_type& key) {
@@ -130,7 +144,7 @@ public:
 
     iterator erase(const_iterator pos) {
         auto erase_it = find(*pos);
-        if (erase_it == end()) { return end(); }
+        if (erase_it == cend()) { return end(); }
 
         auto erase_ptr     = const_cast<pointer>(erase_it.get_pointer());
         auto replace_ptr   = erase_ptr->left_ ? erase_ptr->get_most_right() : nullptr;
@@ -161,13 +175,29 @@ public:
         return begin;
     }
 
-    void graph_dump(const std::string& file_name = "graph.png") const {
-       graphics::tree_painter<KeyT> graph {end_ptr_};
-       graph.graph_dump(file_name);
+    bool contains(const key_type& key) const {
+        return find(key) != cend();
+    }
+
+    size_type count(const key_type& key) const {
+        return contains(key);
+    }
+
+    void clear() noexcept {
+        clear_tree();
+        begin_node_     = end_ptr_;
+        root_node_      = nullptr;
+        end_ptr_->left_ = nullptr;
+        size_           = 0;
     }
 
     size_type size() const noexcept { return size_; };
     bool empty() const noexcept     { return size_ == 0; };
+
+    void graph_dump(const std::string& file_name = "graph.png") const {
+       graphics::tree_painter<KeyT> graph {end_ptr_};
+       graph.graph_dump(file_name);
+    }
 
     const_iterator begin()  const noexcept { return iterator{begin_node_}; }
     const_iterator cbegin() const noexcept { return begin(); }
@@ -370,6 +400,19 @@ private:
                 return start_ptr;
             }
             start_ptr = start_ptr->left_;
+        }
+    }
+
+    void clear_tree() noexcept {
+        for (pointer curr_node = root_node_, tmp{0}; curr_node; curr_node = tmp) {
+            if (!curr_node->left_) {
+                tmp = curr_node->right_;
+                delete curr_node;
+            } else {
+                tmp = curr_node->left_;
+                curr_node->left_ = tmp->right_;
+                tmp->right_ = curr_node;
+            }
         }
     }
 private:
