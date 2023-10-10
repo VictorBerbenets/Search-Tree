@@ -53,7 +53,7 @@ class tree_painter {
                         "\"{End Node | {address: " << elem << "} | { <ptr1> left: " << elem->left_ <<  "}}\"]\n";
         } else {
             graph_file << "node" << curr_node << " [shape = Mrecord, style = filled, fillcolor = \"#FFD0D0\", label ="
-                        "\"{address: "<< elem << "|key: "<< elem->key_ << "|height: "<< elem->height_ <<
+                        "\"{address: "<< elem << "|key: "<< elem->key_ << "|height: "<< elem->height_ << "|size: " << elem->size_ <<
                         "| { <ptr1> left: " << elem->left_ << "| <ptr2> right: " << elem->right_ << "|parent: " << elem->parent_ << "}}\"]\n";
         }
     }

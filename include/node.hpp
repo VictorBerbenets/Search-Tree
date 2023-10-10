@@ -59,7 +59,6 @@ private:
     }
 
     auto go_upper_inc() const {
-        assert(parent_);
         auto tmp = parent_;
         auto copy = this;
         while(copy == tmp->right_) {
@@ -74,6 +73,7 @@ public:
     KeyT key_;
     pointer parent_, left_{nullptr}, right_{nullptr};
     int height_ {0};
+    std::size_t size_ {1}; // size needs for main task: implement fast distance method with O(log(n)) complexity
 };
 
 template<typename KeyT>

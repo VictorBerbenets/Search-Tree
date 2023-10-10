@@ -181,7 +181,7 @@ public:
             set_child_parent_connection(erase_ptr, erase_ptr->right_);
         }
         delete erase_ptr;
-        correct_heights(start_balance);
+        correct_nodes(start_balance);
         balance_tree(start_balance);
         begin_node_ = node_type::get_most_left(end_ptr_);
         --size_;
@@ -245,7 +245,7 @@ private:
         pt->parent_ = local_child;
         local_child->right_ = pt;
 
-        correct_heights(local_child->right_);
+        correct_nodes(local_child->right_);
 
         return local_child;
     }
@@ -261,7 +261,7 @@ private:
         pt->parent_ = local_child;
         local_child->left_ = pt;
 
-        correct_heights(local_child->left_);
+        correct_nodes(local_child->left_);
 
         return local_child;
     }
@@ -281,7 +281,7 @@ private:
         pt->parent_ = local_root->parent_ = local_root_child;
 
         set_child_height(local_root_child->right_);
-        correct_heights(local_root_child->left_);
+        correct_nodes(local_root_child->left_);
 
         return local_root_child;
     }
@@ -301,7 +301,7 @@ private:
         pt->parent_ = local_root->parent_ = local_root_child;
 
         set_child_height(local_root_child->right_);
-        correct_heights(local_root_child->left_);
+        correct_nodes(local_root_child->left_);
 
         return local_root_child;
     }
@@ -338,11 +338,21 @@ private:
         }
     }
 
-    void correct_heights(pointer pt) {
+    void correct_nodes(pointer pt) {
         while(pt != end_ptr_) {
             pt->height_ = determine_height(pt);
+            pt->size_   = determine_node_size(pt);
             pt = pt->parent_;
         }
+    }
+
+    size_type determine_node_size(pointer pt) const {
+        if (!pt->left_ && !pt->right_) {
+            return 0;
+        }
+        size_type left_s  = node_size(pt->left_);
+        size_type right_s = node_size(pt->right_);
+        return left_s + right_s + 1;
     }
 
     size_type determine_height(pointer pt) const {
@@ -356,6 +366,10 @@ private:
 
     size_type height(pointer pt) const {
         return pt ? pt->height_ : 0;
+    }
+
+    size_type node_size(pointer pt) const {
+        return pt ? pt->size_ : 0;
     }
 
     void balance_tree(pointer pt) {
@@ -424,7 +438,7 @@ private:
         } else {
             curr_node->right_ = new node_type{key, curr_node};
         }
-        correct_heights(curr_node);
+        correct_nodes(curr_node);
         ++size_;
     }
 
