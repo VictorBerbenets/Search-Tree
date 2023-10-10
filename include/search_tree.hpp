@@ -348,7 +348,7 @@ private:
 
     size_type determine_node_size(pointer pt) const {
         if (!pt->left_ && !pt->right_) {
-            return 0;
+            return 1;
         }
         size_type left_s  = node_size(pt->left_);
         size_type right_s = node_size(pt->right_);
