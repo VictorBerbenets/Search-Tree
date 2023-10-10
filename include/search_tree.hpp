@@ -307,7 +307,7 @@ private:
     }
 
     void set_child_height(pointer child) {
-        child->height_ = is_child(child) ? 0 : determine_height(child);
+        child->height_ = is_child(child) ? 0 : determine_node_height(child);
     }
 
     void connect_two_nodes(pointer first_node, pointer second_node, childPosition pos) {
@@ -340,7 +340,7 @@ private:
 
     void correct_nodes(pointer pt) {
         while(pt != end_ptr_) {
-            pt->height_ = determine_height(pt);
+            pt->height_ = determine_node_height(pt);
             pt->size_   = determine_node_size(pt);
             pt = pt->parent_;
         }
@@ -355,7 +355,7 @@ private:
         return left_s + right_s + 1;
     }
 
-    size_type determine_height(pointer pt) const {
+    size_type determine_node_height(pointer pt) const {
         if (!pt->left_ && !pt->right_) {
             return 0;
         }
