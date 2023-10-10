@@ -156,15 +156,25 @@ public:
 
     iterator erase(const_iterator pos) {
         auto erase_it = find(*pos);
-        if (erase_it == cend()) { return end(); }
+        if (pos == cend() || erase_it == cend()) { return end(); }
 
         auto erase_ptr   = const_cast<pointer>(erase_it.get_pointer());
         auto replace_ptr = erase_ptr->left_ ? erase_ptr->get_most_right(erase_ptr->left_) : nullptr;
         pointer start_balance{nullptr};
         iterator next_iter = ++iterator{erase_ptr};
         if (replace_ptr) {
-            start_balance = replace_ptr;
+            if (replace_ptr->parent_ != erase_ptr) {
+                replace_ptr->parent_->right_ = nullptr;
+            }
             set_child_parent_connection(erase_ptr, replace_ptr);
+
+            if (erase_ptr->left_ != replace_ptr) {
+                auto most_replace_left = replace_ptr->get_most_left(replace_ptr);
+                start_balance          = most_replace_left;
+                connect_two_nodes(most_replace_left, erase_ptr->left_, childPosition::Left);
+            } else {
+                start_balance = replace_ptr;
+            }
             connect_two_nodes(replace_ptr, erase_ptr->right_, childPosition::Right);
         } else {
             start_balance = erase_ptr->parent_;
