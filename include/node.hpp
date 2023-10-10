@@ -32,14 +32,14 @@ struct Node {
         return go_upper_inc();
     }
 
-    auto get_most_right(pointer start) const {
+    static auto get_most_right(pointer start) {
         while(start->right_) {
             start = start->right_;
         }
         return start;
     }
 
-    auto get_most_left(pointer start) const {
+    static auto get_most_left(pointer start) {
         while(start->left_) {
             start = start->left_;
         }

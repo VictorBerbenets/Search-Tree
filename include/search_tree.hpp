@@ -142,7 +142,7 @@ public:
         }
 
         balance_tree(curr_node);
-        begin_node_ = begin_node_->get_most_left(begin_node_);
+        begin_node_ = node_type::get_most_left(begin_node_);
 
         return {iterator{curr_node}, true};
     }
@@ -159,7 +159,7 @@ public:
         if (pos == cend() || erase_it == cend()) { return end(); }
 
         auto erase_ptr   = const_cast<pointer>(erase_it.get_pointer());
-        auto replace_ptr = erase_ptr->left_ ? erase_ptr->get_most_right(erase_ptr->left_) : nullptr;
+        auto replace_ptr = erase_ptr->left_ ? node_type::get_most_right(erase_ptr->left_) : nullptr;
         pointer start_balance{nullptr};
         iterator next_iter = ++iterator{erase_ptr};
         if (replace_ptr) {
@@ -169,7 +169,7 @@ public:
             set_child_parent_connection(erase_ptr, replace_ptr);
 
             if (erase_ptr->left_ != replace_ptr) {
-                auto most_replace_left = replace_ptr->get_most_left(replace_ptr);
+                auto most_replace_left = node_type::get_most_left(replace_ptr);
                 start_balance          = most_replace_left;
                 connect_two_nodes(most_replace_left, erase_ptr->left_, childPosition::Left);
             } else {
@@ -183,7 +183,7 @@ public:
         delete erase_ptr;
         correct_heights(start_balance);
         balance_tree(start_balance);
-        begin_node_ = end_ptr_->get_most_left(end_ptr_);
+        begin_node_ = node_type::get_most_left(end_ptr_);
         --size_;
 
         return next_iter;
