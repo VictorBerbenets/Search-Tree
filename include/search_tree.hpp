@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <utility>
+#include <tuple>
 #include <memory>
 #include <type_traits>
 #include <algorithm>
@@ -260,10 +261,30 @@ public:
     }
 
     int distance(const_iterator begin, const_iterator end) const {
-        size_type diff{0};
-        while(begin) {
+        using iters_order = std::tuple<const_pointer, const_pointer, int>;
 
+        auto [start_ptr, end_ptr, is_direct] = begin < end ?
+        iters_order(begin.get_pointer(), end.get_pointer(), 1) : iters_order(end.get_pointer(), begin.get_pointer(), -1);
+        int dist {start_ptr->size_};
+        if (start_ptr->left_) {
+            dist -= start_ptr->left_->size_;
         }
+        start_ptr = start_ptr->parent_;
+        while(start_ptr != end_ptr) {
+            if (comp_(start_ptr->key_, end_ptr->key_)) {
+                if (start_ptr == root_node_) {
+                    start_ptr = start_ptr->right_;
+                } else {
+                    start_ptr = start_ptr->parent_;
+                }
+            } else { // comp_(end_ptr->key_, start_ptr->key) == true
+                start_ptr = start_ptr->left_;
+            }
+            if (start_ptr->right_) {
+                dist += start_ptr->right_->size_;
+            }
+        }
+        return dist * is_direct;
     }
 
     bool contains(const key_type& key) const {
