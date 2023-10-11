@@ -54,8 +54,30 @@ public:
     AVL_Tree(const Compare& comp = Compare())
     : comp_ {comp} {}
 
-    AVL_Tree(const AVL_Tree& rhs) {
+    AVL_Tree(const AVL_Tree& rhs)
+    : size_ {rhs.size_},
+      comp_ {rhs.comp_} {
+        if (!rhs.size_) { return ; }
 
+        std::queue<pointer> nodes   {}; // level tree traversal
+        std::queue<pointer> parents {};
+
+        nodes.push(rhs.root_node_);
+        parents.push(end_ptr_);
+        //auto create_place  = root_node_;
+        auto create_parent = end_ptr_;
+        while(nodes.size()) {
+            auto elem = nodes.front();
+
+            if (elem->left_) {
+                //create_place = create_place->left_;
+                nodes.push(elem->left_);
+            }
+            if (elem->right_) {
+                nodes.push(elem->right_);
+            }
+            nodes.pop();
+        }
     }
 
     AVL_Tree(AVL_Tree&& rhs)
@@ -230,7 +252,11 @@ public:
     }
 
     int distance(const_iterator begin, const_iterator end) const {
-
+#if 0
+        for () {
+            ;
+        }
+#endif
     }
 
     bool contains(const key_type& key) const {
