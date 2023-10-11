@@ -68,16 +68,16 @@ public:
         rhs_nodes.push(rhs.root_node_);
         nodes.push(root_node_);
         while(rhs_nodes.size()) {
-            auto parent = nodes.front();
-            auto elem   = rhs_nodes.front();
-            if (elem->left_) {
-                parent->left_ = new node_type{elem->left_->key_, parent};
-                rhs_nodes.push(elem->left_);
+            auto parent   = nodes.front();
+            auto rhs_node = rhs_nodes.front();
+            if (rhs_node->left_) {
+                parent->left_ = new node_type{rhs_node->left_->key_, parent};
+                rhs_nodes.push(rhs_node->left_);
                 nodes.push(parent->left_);
             }
-            if (elem->right_) {
-                parent->right_ = new node_type{elem->right_->key_, parent};
-                rhs_nodes.push(elem->right_);
+            if (rhs_node->right_) {
+                parent->right_ = new node_type{rhs_node->right_->key_, parent};
+                rhs_nodes.push(rhs_node->right_);
                 nodes.push(parent->right_);
             }
             rhs_nodes.pop();
