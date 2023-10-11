@@ -59,25 +59,30 @@ public:
       comp_ {rhs.comp_} {
         if (!rhs.size_) { return ; }
 
-        std::queue<pointer> nodes   {}; // level tree traversal
-        std::queue<pointer> parents {};
+        create_root_node(rhs.root_node_->key_);
 
-        nodes.push(rhs.root_node_);
-        parents.push(end_ptr_);
-        //auto create_place  = root_node_;
-        auto create_parent = end_ptr_;
-        while(nodes.size()) {
-            auto elem = nodes.front();
+        std::queue<pointer> rhs_nodes {}; // level tree traversal nodes
+        std::queue<pointer> nodes     {}; // creating nodes
 
+        rhs_nodes.push(rhs.root_node_);
+        nodes.push(root_node_);
+        while(rhs_nodes.size()) {
+            auto parent = nodes.front();
+            auto elem   = rhs_nodes.front();
             if (elem->left_) {
-                //create_place = create_place->left_;
-                nodes.push(elem->left_);
+                parent->left_ = new node_type{elem->left_->key_, parent};
+                rhs_nodes.push(elem->left_);
+                nodes.push(parent->left_);
             }
             if (elem->right_) {
-                nodes.push(elem->right_);
+                parent->right_ = new node_type{elem->right_->key_, parent};
+                rhs_nodes.push(elem->right_);
+                nodes.push(parent->right_);
             }
+            rhs_nodes.pop();
             nodes.pop();
         }
+        begin_node_ = node_type::get_most_left(root_node_);
     }
 
     AVL_Tree(AVL_Tree&& rhs)
@@ -517,7 +522,7 @@ private:
     pointer root_node_ {};
     end_node end_node_ {};
     end_pointer end_ptr_ {std::addressof(end_node_)};
-    pointer begin_node_ {std::addressof(end_node_)};
+    pointer begin_node_ {end_ptr_};
     size_type size_ {0};
     Compare comp_;
 }; // <--- class AVL_Tree
