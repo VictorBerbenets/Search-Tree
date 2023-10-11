@@ -198,10 +198,38 @@ public:
     }
 
     const_iterator lower_bound(const key_type& key) const {
+        if (!root_node_) { return cend(); }
 
+        auto curr_node = root_node_;
+        pointer result {nullptr};
+        while (curr_node) {
+            if (!comp_(curr_node->key_, key)) {
+                result = curr_node;
+                curr_node = curr_node->left_;
+            } else {
+                curr_node = curr_node->right_;
+            }
+        }
+        return result ? result : cend();
     }
 
     const_iterator upper_bound(const key_type& key) const {
+       if (!root_node_) { return cend(); }
+
+        auto curr_node = root_node_;
+        pointer result {nullptr};
+        while (curr_node) {
+            if (comp_(key, curr_node->key_)) {
+                result = curr_node;
+                curr_node = curr_node->left_;
+            } else {
+                curr_node = curr_node->right_;
+            }
+        }
+        return result ? result : cend();
+    }
+
+    int distance(const_iterator begin, const_iterator end) const {
 
     }
 
