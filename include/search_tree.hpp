@@ -100,10 +100,12 @@ public:
         if (this == std::addressof(rhs)) {
             return *this;
         }
-
+        auto copy = rhs;
+        swap(copy);
+        return *this;
     }
 
-    AVL_Tree& operator=(AVL_Tree&& rhs) noexcept(noexcept(swap())) {
+    AVL_Tree& operator=(AVL_Tree&& rhs) noexcept(noexcept(swap(rhs))) {
         swap(rhs);
         return *this;
     }
