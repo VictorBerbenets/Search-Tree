@@ -260,11 +260,10 @@ public:
     }
 
     int distance(const_iterator begin, const_iterator end) const {
-#if 0
-        for () {
-            ;
+        size_type diff{0};
+        while(begin) {
+
         }
-#endif
     }
 
     bool contains(const key_type& key) const {
@@ -308,6 +307,7 @@ private:
         local_child->right_ = pt;
 
         correct_nodes(local_child->right_);
+        correct_nodes(local_child->left_);
 
         return local_child;
     }
@@ -324,6 +324,7 @@ private:
         local_child->left_ = pt;
 
         correct_nodes(local_child->left_);
+        correct_nodes(local_child->right_);
 
         return local_child;
     }
@@ -344,6 +345,7 @@ private:
 
         set_child_height(local_root_child->right_);
         correct_nodes(local_root_child->left_);
+        correct_nodes(local_root_child->right_);
 
         return local_root_child;
     }
@@ -364,6 +366,7 @@ private:
 
         set_child_height(local_root_child->right_);
         correct_nodes(local_root_child->left_);
+        correct_nodes(local_root_child->right_);
 
         return local_root_child;
     }
