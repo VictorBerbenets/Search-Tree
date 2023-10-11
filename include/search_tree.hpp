@@ -7,6 +7,7 @@
 #include <type_traits>
 #include <algorithm>
 #include <initializer_list>
+#include <queue>
 #include <cstddef>
 #include <cassert>
 
