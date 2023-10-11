@@ -52,7 +52,7 @@ public:
     AVL_Tree(std::initializer_list<KeyT> ls, const Compare& comp = Compare())
     : AVL_Tree {ls.begin(), ls.end(), comp} {}
 
-    AVL_Tree(const Compare& comp = Compare())
+    explicit AVL_Tree(const Compare& comp = Compare())
     : comp_ {comp} {}
 
     AVL_Tree(const AVL_Tree& rhs)
