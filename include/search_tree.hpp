@@ -274,7 +274,6 @@ public:
                 child     = start_ptr;
                 start_ptr = start_ptr->parent_;
                 ++dist;
-                //while (start_ptr && start_ptr->right_ == child) {
                 while (start_ptr->right_ == child) {
                     child     = start_ptr;
                     start_ptr = start_ptr->parent_;
