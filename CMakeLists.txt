@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.20)
 
 project(search_tree)
 
@@ -11,10 +11,12 @@ add_executable(${PROJECT_NAME} ${SRC_DIR})
 target_include_directories( ${PROJECT_NAME}
                             PRIVATE
                             ${INCLUDE_DIR})
+
 set_target_properties(
     ${PROJECT_NAME} PROPERTIES
     CXX_STANDARD 20
     CXX_STANDARD_REQUIRED ON
-    COMPILE_FLAGS "-Wall -Wextra -g -Og"
+    COMPILE_FLAGS "-Wall -Wextra"
 )
 
+add_subdirectory(tests)
