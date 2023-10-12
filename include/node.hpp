@@ -9,8 +9,10 @@ namespace detail {
 
 template<typename KeyT>
 struct Node {
-    using pointer       = Node*;
-    using const_pointer = const Node*;
+    using size_type       = std::size_t;
+    using difference_type = std::ptrdiff_t;
+    using pointer         = Node*;
+    using const_pointer   = const Node*;
 
     Node(const KeyT& key, pointer parent = nullptr)
     : key_ {key},
@@ -32,19 +34,42 @@ struct Node {
         return go_upper_inc();
     }
 
-    static auto get_most_right(pointer start) {
+    static auto get_most_right(pointer start) noexcept {
         while(start->right_) {
             start = start->right_;
         }
         return start;
     }
 
-    static auto get_most_left(pointer start) {
+    static auto get_most_left(pointer start) noexcept {
         while(start->left_) {
             start = start->left_;
         }
         return start;
     }
+
+    static difference_type height_difference(const_pointer left, const_pointer right) noexcept {
+        return (left ? (left->height_ + 1) : 0) - (right ? (right->height_ + 1) : 0);
+    }
+
+    size_type node_size() const noexcept {
+        if (!left_ && !right_) {
+            return 1;
+        }
+        size_type left_s  = size(left_);
+        size_type right_s = size(right_);
+        return left_s + right_s + 1;
+    }
+
+    size_type node_height() const noexcept {
+        if (!left_ && !right_) {
+            return 0;
+        }
+        size_type left_h  = height(left_);
+        size_type right_h = height(right_);
+        return std::max(left_h, right_h) + 1;
+    }
+
 private:
     auto go_upper_dec() const {
         auto tmp = parent_;
@@ -68,6 +93,14 @@ private:
             copy = tmp;
         }
         return copy;
+    }
+
+    static size_type height(pointer pt) noexcept {
+        return pt ? pt->height_ : 0;
+    }
+
+    static size_type size(pointer pt) noexcept {
+        return pt ? pt->size_ : 0;
     }
 public:
     KeyT key_;

@@ -24,12 +24,12 @@ public:
     using key_type        = KeyT;
     using value_type      = KeyT;
     using size_type       = std::size_t;
-    using difference_type = std::ptrdiff_t;
     using key_compare     = Compare;
     using value_compare   = Compare;
     using reference       = value_type&;
     using const_reference = const value_type&;
     using node_type       = detail::Node<key_type>;
+    using difference_type = node_type::difference_type;
     using pointer         = node_type*;
     using const_pointer   = const node_type*;
     using iterator        = detail::TreeIterator<key_type>;
@@ -393,7 +393,7 @@ private:
     }
 
     void set_child_height(pointer child) {
-        child->height_ = is_child(child) ? 0 : determine_node_height(child);
+        child->height_ = is_child(child) ? 0 : child->node_height();
     }
 
     void connect_two_nodes(pointer first_node, pointer second_node, childPosition pos) {
@@ -426,48 +426,22 @@ private:
 
     void correct_nodes(pointer pt) {
         while(pt != end_ptr_) {
-            pt->height_ = determine_node_height(pt);
-            pt->size_   = determine_node_size(pt);
+            pt->height_ = pt->node_height();
+            pt->size_   = pt->node_size();
             pt = pt->parent_;
         }
     }
 
-    size_type determine_node_size(pointer pt) const {
-        if (!pt->left_ && !pt->right_) {
-            return 1;
-        }
-        size_type left_s  = node_size(pt->left_);
-        size_type right_s = node_size(pt->right_);
-        return left_s + right_s + 1;
-    }
-
-    size_type determine_node_height(pointer pt) const {
-        if (!pt->left_ && !pt->right_) {
-            return 0;
-        }
-        size_type left_h  = height(pt->left_);
-        size_type right_h = height(pt->right_);
-        return std::max(left_h, right_h) + 1;
-    }
-
-    size_type height(pointer pt) const {
-        return pt ? pt->height_ : 0;
-    }
-
-    size_type node_size(pointer pt) const {
-        return pt ? pt->size_ : 0;
-    }
-
     void balance_tree(pointer pt) {
         while(pt != end_ptr_) {
-            if ( is_disbalance( height_difference(pt->right_, pt->left_) ) ) {
-                if (height_difference(pt->right_->right_, pt->right_->left_) >= 0) {
+            if (is_disbalance(node_type::height_difference(pt->right_, pt->left_))) {
+                if (node_type::height_difference(pt->right_->right_, pt->right_->left_) >= 0) {
                     pt = left_turn(pt);
                 } else {
                     pt = big_left_turn(pt);
                 }
-            } else if ( is_disbalance( height_difference(pt->left_, pt->right_) ) ) {
-                if (height_difference(pt->left_->left_, pt->left_->right_) >= 0) {
+            } else if (is_disbalance(node_type::height_difference(pt->left_, pt->right_))) {
+                if (node_type::height_difference(pt->left_->left_, pt->left_->right_) >= 0) {
                     pt = right_turn(pt);
                 } else {
                     pt = big_right_turn(pt);
@@ -475,10 +449,6 @@ private:
             }
             pt = pt->parent_;
         }
-    }
-
-    difference_type height_difference(const_pointer left, const_pointer right) const noexcept {
-        return (left ? (left->height_ + 1) : 0) - (right ? (right->height_ + 1) : 0);
     }
 
     bool is_disbalance(difference_type diff) const noexcept { return diff == DIFF_HEIGHT; }
