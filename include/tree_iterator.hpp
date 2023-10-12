@@ -62,6 +62,11 @@ bool operator==(TreeIterator<KeyT> lhs, TreeIterator<KeyT> rhs) noexcept {
 }
 
 template<typename KeyT>
+bool operator!=(TreeIterator<KeyT> lhs, TreeIterator<KeyT> rhs) noexcept {
+    return !(lhs == rhs);
+}
+
+template<typename KeyT>
 bool operator<(TreeIterator<KeyT> lhs, TreeIterator<KeyT> rhs) noexcept {
     return lhs.get_pointer()->key_ < rhs.get_pointer()->key_;
 }
