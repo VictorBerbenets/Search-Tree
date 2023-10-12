@@ -266,7 +266,6 @@ public:
         const_pointer child = start_ptr->left_;
         while(start_ptr != end_ptr && start_ptr) {
             if (find_in_subtree(start_ptr, end_ptr->key_) == cend()) {
-
                 if (start_ptr->left_ == child) {
                     if (start_ptr->right_) {
                         dist += start_ptr->right_->size_;
@@ -280,7 +279,6 @@ public:
                     start_ptr = start_ptr->parent_;
                     continue;
                 }
-
             } else {
                 start_ptr = start_ptr->right_;
                 ++dist;
