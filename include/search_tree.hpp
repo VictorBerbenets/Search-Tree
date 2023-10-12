@@ -255,24 +255,34 @@ public:
 
         auto [start_ptr, end_ptr, is_direct] = begin < end ?
         iters_order(begin.get_pointer(), end.get_pointer(), 1) : iters_order(end.get_pointer(), begin.get_pointer(), -1);
-        int dist {start_ptr->size_};
-        if (start_ptr->left_) {
-            dist -= start_ptr->left_->size_;
-        }
-        auto child = start_ptr;
-        start_ptr  = start_ptr->parent_;
+        int dist {0};
+        const_pointer child = start_ptr->left_;
         while(start_ptr != end_ptr && start_ptr) {
-            if (comp_(start_ptr->key_, end_ptr->key_)) {
-                if (start_ptr == root_node_) {
-                    start_ptr = start_ptr->right_;
-                } else {
-                    start_ptr = start_ptr->parent_;
+            if (find_in_subtree(start_ptr, end_ptr->key_) == cend()) {
+                if (start_ptr->left_ == child) {
+                    if (start_ptr->right_) {
+                        dist += start_ptr->right_->size_;
+                    }
                 }
-            } else { // comp_(end_ptr->key_, start_ptr->key) == true
-                start_ptr = start_ptr->left_;
-            }
-            if (start_ptr->right_) {
-                dist += start_ptr->right_->size_;
+                child     = start_ptr;
+                start_ptr = start_ptr->parent_;
+                ++dist;
+            } else {
+                start_ptr = start_ptr->right_;
+                while(start_ptr != end_ptr && start_ptr) {
+                    if (comp_(end_ptr->key_, start_ptr->key_)) {
+                        start_ptr = start_ptr->left_;
+                        ++dist;
+                    } else if (comp_(start_ptr->key_, end_ptr->key_)) {
+                        if (start_ptr->left_) {
+                            dist += start_ptr->left_->size_;
+                        }
+                        start_ptr = start_ptr->right_;
+                    }
+                }
+                if (start_ptr->left_) {
+                    dist += start_ptr->left_->size_ + 1;
+                }
             }
         }
         return dist * is_direct;
@@ -444,7 +454,7 @@ private:
 
     bool is_disbalance(difference_type diff) const noexcept { return diff == DIFF_HEIGHT; }
 
-    const_iterator find_in_subtree(pointer start_find, const key_type& key) const noexcept(noexcept(comp_(key, key))) {
+    const_iterator find_in_subtree(const_pointer start_find, const key_type& key) const noexcept(noexcept(comp_(key, key))) {
         while(start_find) {
             if (comp_(key, start_find->key_)) {
                 start_find = start_find->left_;
