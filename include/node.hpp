@@ -2,6 +2,7 @@
 #define TREE_NODE
 
 #include <utility>
+#include <algorithm>
 
 namespace yLAB {
 
