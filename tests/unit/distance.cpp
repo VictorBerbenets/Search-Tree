@@ -45,3 +45,13 @@ TEST(DistanceMethod, Distance4) {
         }
     }
 }
+
+TEST(DistanceMethod, Distance5) {
+    AVL_Tree<int> avl{};
+    constexpr int size = 1000000;
+    for (auto i = 0; i < size; ++i) {
+        avl.emplace(i);
+    }
+
+    ASSERT_EQ(avl.distance(avl.begin(), avl.end()), size);
+}
