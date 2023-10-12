@@ -111,7 +111,7 @@ public:
         return *this;
     }
 
-    void swap(AVL_Tree& rhs) noexcept(std::is_nothrow_swappable<Compare>::value) {
+    void swap(AVL_Tree& rhs) noexcept(std::is_nothrow_swappable_v<Compare>) {
         std::swap(root_node_, rhs.root_node_);
         std::swap(begin_node_, rhs.begin_node_);
         std::swap(comp_, rhs.comp_);
@@ -121,18 +121,8 @@ public:
         rhs.rebalance_tree_pointers();
     }
 
-    const_iterator find(const key_type& key) const {
-        auto curr_node = root_node_;
-        while(curr_node) {
-            if (comp_(key, curr_node->key_)) {
-                curr_node = curr_node->left_;
-            } else if (comp_(curr_node->key_, key)) {
-                curr_node = curr_node->right_;
-            } else {
-                return const_iterator{curr_node};
-            }
-        }
-        return cend();
+    const_iterator find(const key_type& key) const noexcept(noexcept(find_in_subtree(root_node_, key))){
+        return find_in_subtree(root_node_, key);
     }
 
     template<typename... Args>
@@ -269,8 +259,9 @@ public:
         if (start_ptr->left_) {
             dist -= start_ptr->left_->size_;
         }
-        start_ptr = start_ptr->parent_;
-        while(start_ptr != end_ptr) {
+        auto child = start_ptr;
+        start_ptr  = start_ptr->parent_;
+        while(start_ptr != end_ptr && start_ptr) {
             if (comp_(start_ptr->key_, end_ptr->key_)) {
                 if (start_ptr == root_node_) {
                     start_ptr = start_ptr->right_;
@@ -453,6 +444,19 @@ private:
 
     bool is_disbalance(difference_type diff) const noexcept { return diff == DIFF_HEIGHT; }
 
+    const_iterator find_in_subtree(pointer start_find, const key_type& key) const noexcept(noexcept(comp_(key, key))) {
+        while(start_find) {
+            if (comp_(key, start_find->key_)) {
+                start_find = start_find->left_;
+            } else if (comp_(start_find->key_, key)) {
+                start_find = start_find->right_;
+            } else {
+                return const_iterator{start_find};
+            }
+        }
+        return cend();
+    }
+
     void erase_node(pointer& erase_ptr, pointer child) { // erase_ptr doesn't have at least one child
         auto erase_parent = erase_ptr->parent_;
         if (child) {
@@ -469,7 +473,7 @@ private:
         balance_tree(erase_parent);
     }
 
-    void rebalance_tree_pointers() {
+    void rebalance_tree_pointers() noexcept {
         if (root_node_) {
             root_node_->parent_ = end_ptr_;
             end_ptr_->left_     = root_node_;
@@ -498,8 +502,7 @@ private:
         ++size_;
     }
 
-    static bool is_child(pointer pt) {
-        assert(pt);
+    static bool is_child(pointer pt) noexcept {
         return pt->left_ == nullptr && pt->right_ == nullptr;
     }
 
@@ -541,4 +544,3 @@ bool operator==(const AVL_Tree<KeyT, Compare>& lhs, const AVL_Tree<KeyT, Compare
 } // <--- namespace yLAB
 
 #endif
-
