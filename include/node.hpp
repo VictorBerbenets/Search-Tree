@@ -112,7 +112,9 @@ public:
 
 template<typename KeyT>
 struct EndNode: public Node<KeyT> {
-    explicit EndNode(Node<KeyT>::pointer root = nullptr)
+    using typename Node<KeyT>::pointer;
+
+    explicit EndNode(pointer root = nullptr)
     : Node<KeyT>{KeyT(), root} {}
 };
 

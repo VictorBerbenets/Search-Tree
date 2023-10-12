@@ -29,7 +29,7 @@ public:
     using reference       = value_type&;
     using const_reference = const value_type&;
     using node_type       = detail::Node<key_type>;
-    using difference_type = node_type::difference_type;
+    using difference_type = typename node_type::difference_type;
     using pointer         = node_type*;
     using const_pointer   = const node_type*;
     using iterator        = detail::TreeIterator<key_type>;

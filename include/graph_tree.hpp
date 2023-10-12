@@ -47,15 +47,9 @@ class tree_painter {
     }
 
     void create_node(std::ofstream& graph_file, pointer elem, size_type curr_node) const {
-        // to do
-        if (std::same_as<decltype(elem), const end_node_ptr>) {
-            graph_file << "node" << curr_node << " [shape = Mrecord, style = filled, fillcolor = \"#ABFFF1\", label ="
-                        "\"{End Node | {address: " << elem << "} | { <ptr1> left: " << elem->left_ <<  "}}\"]\n";
-        } else {
-            graph_file << "node" << curr_node << " [shape = Mrecord, style = filled, fillcolor = \"#FFD0D0\", label ="
-                        "\"{address: "<< elem << "|key: "<< elem->key_ << "|height: "<< elem->height_ << "|size: " << elem->size_ <<
-                        "| { <ptr1> left: " << elem->left_ << "| <ptr2> right: " << elem->right_ << "|parent: " << elem->parent_ << "}}\"]\n";
-        }
+        graph_file << "node" << curr_node << " [shape = Mrecord, style = filled, fillcolor = \"#FFD0D0\", label ="
+                    "\"{address: "<< elem << "|key: "<< elem->key_ << "|height: "<< elem->height_ << "|size: " << elem->size_ <<
+                    "| { <ptr1> left: " << elem->left_ << "| <ptr2> right: " << elem->right_ << "|parent: " << elem->parent_ << "}}\"]\n";
     }
 
     void create_next_graph_node(std::ofstream& graph_file, pointer elem, size_type curr_node,
