@@ -121,7 +121,7 @@ public:
         rhs.rebalance_tree_pointers();
     }
 
-    const_iterator find(const key_type& key) const noexcept(noexcept(find_in_subtree(root_node_, key))){
+    const_iterator find(const key_type& key) const noexcept(noexcept(find_in_subtree(root_node_, key))) {
         return find_in_subtree(root_node_, key);
     }
 
@@ -251,29 +251,22 @@ public:
     }
 
     int distance(const_iterator begin, const_iterator end) const {
-        using iters_order = std::tuple<const_pointer, const_pointer, int>;
+        using ptrs_pair = std::pair<const_pointer, const_pointer>;
 
-        auto [start_ptr, end_ptr, is_direct] = begin < end ?
-        iters_order(begin.get_pointer(), end.get_pointer(), 1) : iters_order(end.get_pointer(), begin.get_pointer(), -1);
+        auto [start_ptr, end_ptr] = ptrs_pair(begin.get_pointer(), end.get_pointer());
+
         int dist {0};
+        if (end_ptr == end_ptr_) {
+            if (start_ptr == end_ptr) {
+                return 0;
+            }
+            end_ptr = node_type::get_most_right(root_node_);
+            ++dist;
+        }
         const_pointer child = start_ptr->left_;
         while(start_ptr != end_ptr && start_ptr) {
-#if 0
-            if (start_ptr->right_ == child) {
-                std::cout << "IN THE BEGIN\n";
-                child     = start_ptr;
-                start_ptr = start_ptr->parent_;
-                ++dist;
-                continue;
-            }
-            std::cout << "KEY  = " << start_ptr->key_ << std::endl;
-            std::cout << "DIST = " << dist << std::endl;
-#endif
             if (find_in_subtree(start_ptr, end_ptr->key_) == cend()) {
-#if 0
-                std::cout << "IN IF\n";
-                std::cout << "CHILD = " << child->key_ << std::endl;
-#endif
+
                 if (start_ptr->left_ == child) {
                     if (start_ptr->right_) {
                         dist += start_ptr->right_->size_;
@@ -282,7 +275,7 @@ public:
                 child     = start_ptr;
                 start_ptr = start_ptr->parent_;
                 ++dist;
-                if (start_ptr->right_ == child) {
+                while (start_ptr && start_ptr->right_ == child) {
                     child     = start_ptr;
                     start_ptr = start_ptr->parent_;
                     continue;
@@ -291,16 +284,10 @@ public:
             } else {
                 start_ptr = start_ptr->right_;
                 ++dist;
-#if 0
-                std::cout << "IN ELSE\n";
-                std::cout << "KEY  = " << start_ptr->key_ << std::endl;
-                std::cout << "DIST = " << dist << std::endl;
-#endif
                 while(start_ptr != end_ptr && start_ptr) {
                     if (comp_(end_ptr->key_, start_ptr->key_)) {
                         start_ptr = start_ptr->left_;
                     } else if (comp_(start_ptr->key_, end_ptr->key_)) {
-                        assert(start_ptr->right_);
                         dist += start_ptr->size_ - start_ptr->right_->size_;
                         start_ptr = start_ptr->right_;
                     }
@@ -310,7 +297,7 @@ public:
                 }
             }
         }
-        return dist * is_direct;
+        return dist;
     }
 
     bool contains(const key_type& key) const {
