@@ -258,7 +258,22 @@ public:
         int dist {0};
         const_pointer child = start_ptr->left_;
         while(start_ptr != end_ptr && start_ptr) {
+#if 0
+            if (start_ptr->right_ == child) {
+                std::cout << "IN THE BEGIN\n";
+                child     = start_ptr;
+                start_ptr = start_ptr->parent_;
+                ++dist;
+                continue;
+            }
+            std::cout << "KEY  = " << start_ptr->key_ << std::endl;
+            std::cout << "DIST = " << dist << std::endl;
+#endif
             if (find_in_subtree(start_ptr, end_ptr->key_) == cend()) {
+#if 0
+                std::cout << "IN IF\n";
+                std::cout << "CHILD = " << child->key_ << std::endl;
+#endif
                 if (start_ptr->left_ == child) {
                     if (start_ptr->right_) {
                         dist += start_ptr->right_->size_;
@@ -267,21 +282,31 @@ public:
                 child     = start_ptr;
                 start_ptr = start_ptr->parent_;
                 ++dist;
+                if (start_ptr->right_ == child) {
+                    child     = start_ptr;
+                    start_ptr = start_ptr->parent_;
+                    continue;
+                }
+
             } else {
                 start_ptr = start_ptr->right_;
+                ++dist;
+#if 0
+                std::cout << "IN ELSE\n";
+                std::cout << "KEY  = " << start_ptr->key_ << std::endl;
+                std::cout << "DIST = " << dist << std::endl;
+#endif
                 while(start_ptr != end_ptr && start_ptr) {
                     if (comp_(end_ptr->key_, start_ptr->key_)) {
                         start_ptr = start_ptr->left_;
-                        ++dist;
                     } else if (comp_(start_ptr->key_, end_ptr->key_)) {
-                        if (start_ptr->left_) {
-                            dist += start_ptr->left_->size_;
-                        }
+                        assert(start_ptr->right_);
+                        dist += start_ptr->size_ - start_ptr->right_->size_;
                         start_ptr = start_ptr->right_;
                     }
                 }
                 if (start_ptr->left_) {
-                    dist += start_ptr->left_->size_ + 1;
+                    dist += start_ptr->left_->size_;
                 }
             }
         }
