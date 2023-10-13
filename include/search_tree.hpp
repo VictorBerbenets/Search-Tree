@@ -283,7 +283,7 @@ public:
             } else {
                 start_ptr = start_ptr->right_;
                 ++dist;
-                while(start_ptr != end_ptr && start_ptr) {
+                while(start_ptr != end_ptr) {
                     if (comp_(end_ptr->key_, start_ptr->key_)) {
                         start_ptr = start_ptr->left_;
                     } else if (comp_(start_ptr->key_, end_ptr->key_)) {
