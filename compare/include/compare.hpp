@@ -19,6 +19,7 @@ template<typename KeyT>
 class comporator final {
     using size_type = std::size_t;
     using range     = std::pair<KeyT, KeyT>;
+
     static constexpr char KEY   = 'k';
     static constexpr char QUERY = 'q';
 
@@ -42,7 +43,7 @@ public:
         if (!data_file.is_open()) {
             throw std::runtime_error{"error while opening compare.txt\n"};
         }
-        
+
         yLAB::AVL_Tree<KeyT> avl_tree{};
 
         char marker = 0;
@@ -61,7 +62,7 @@ public:
                 if (!data_file.good()) {
                     break;
                 }
-                
+
                 auto lower_iter = avl_tree.lower_bound(lower_bound);
                 auto upper_iter = avl_tree.upper_bound(upper_bound);
 
@@ -69,7 +70,7 @@ public:
                 auto avl_dist  = avl_tree.distance(lower_iter, upper_iter);
                 auto avl_end   = std::chrono::high_resolution_clock::now();
                 std::chrono::duration<double> avl_dur = avl_end - avl_start;
-                
+
                 auto std_dist_start = std::chrono::high_resolution_clock::now();
                 auto std_dist       = std::distance(lower_iter, upper_iter);
                 auto std_dist_end   = std::chrono::high_resolution_clock::now();
@@ -82,13 +83,12 @@ public:
                 data_.emplace_back(avl_dur.count(), std_dist_dur.count(), std_dist, range{lower_bound, upper_bound});
             }
         }
-
     }
-    
+
     void dump() {
         distance_comparing();
 
-        std::string comp_file = "compare.txt";
+        std::string comp_file = "../compare/compare.txt";
         std::ofstream dump_file(comp_file, std::ios::app);
         if (!dump_file.is_open()) {
             throw std::runtime_error{"error while opening compare.txt\n"};
@@ -110,7 +110,6 @@ public:
         if (!dump_file.good()) {
             throw std::runtime_error{"writing file error\n!"};
         }
-
     }
 
 private:
