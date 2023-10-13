@@ -1,7 +1,7 @@
 # Search tree implementation (AVL tree)
 ### About
 This program finds a range of values in a balanced search tree in O(log(n)) complexity,  
-thereby overtaking std::distance() function which works for O(n).
+thereby overtaking **std::distance()** function which works for O(n).
 ## Requirements
 **cmake** version must be 3.15 or higher
 ## How to build
@@ -43,6 +43,8 @@ There will be the tests themselves and the answers to them.
 ```bash
 bash ../compare/compare.sh
 ```
-This program will output to a file compare/compare.txt comparison of the performance time  
-of the distance method in the AVL tree and std::distance().  
+This program will output to a file **compare/compare.txt** comparison of the performance time  
+of the distance method in the AVL tree and **std::distance()**.  
 Make sure that you have generated end2end tests before, so they are taken for comparison.
+## Graphviz AVL tree visualization
+![Image alt](https://github.com/VictorBerbenets/SearchTree/raw/search_tree/data/avl_tree.png)
