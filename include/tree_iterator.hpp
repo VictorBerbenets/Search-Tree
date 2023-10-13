@@ -1,5 +1,5 @@
-#ifndef TREE_ITERATOR_
-#define TREE_ITERATOR_
+#ifndef TREE_ITERATOR
+#define TREE_ITERATOR
 
 #include <iterator>
 #include <memory>

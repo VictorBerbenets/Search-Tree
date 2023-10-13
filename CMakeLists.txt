@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.15)
 
 project(search_tree)
 
@@ -20,3 +20,4 @@ set_target_properties(
 )
 
 add_subdirectory(tests)
+add_subdirectory(compare)
