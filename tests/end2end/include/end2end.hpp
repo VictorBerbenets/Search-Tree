@@ -101,7 +101,6 @@ class generator final {
             }
         }
         ans_file << std::endl;
-
     }
 
 public:
