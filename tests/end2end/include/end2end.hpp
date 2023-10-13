@@ -14,9 +14,9 @@
 namespace testing {
 
 namespace dirs {
-    const std::string resource_dir   = "../tests/end2end/resources";
-    const std::string tests_dir = "../tests/end2end/resources/tests/";
-    const std::string ans_dir  = "../tests/end2end/resources/answers/";
+    const std::string resource_dir = "../tests/end2end/resources";
+    const std::string tests_dir    = "../tests/end2end/resources/tests/";
+    const std::string ans_dir      = "../tests/end2end/resources/answers/";
 }
 
 template<std::integral T>
@@ -73,7 +73,7 @@ class generator final {
         std::ofstream ans_file  {dirs::ans_dir + ans_name};
 
         std::set<T> set {};
-        for (size_type keys = 0, queries = 0; ; ) {
+        for (size_type keys = 0, queries = 0; (keys + queries) != (keys_number_ + queries_number_); ) {
             auto data_type = key_or_query();
             if (data_type == Data::Key && keys != keys_number_) {
                 test_file << 'k' << ' ';
@@ -81,7 +81,8 @@ class generator final {
                 test_file << key << ' ';
                 set.insert(key);
                 ++keys;
-            } else if (data_type == Data::Query && queries != queries_number_) {
+            }
+            if (data_type == Data::Query && queries != queries_number_) {
                 test_file << 'q' << ' ';
                 auto lower = random_value();
                 if (lower == MAX_KEY_VALUE) {
@@ -97,8 +98,6 @@ class generator final {
                 ans_file << std::distance(lower_it, upper_it) << ' ';
 
                 ++queries;
-            } else {
-                break;
             }
         }
         ans_file << std::endl;
