@@ -29,6 +29,7 @@ std::vector<int> get_data() {
             data.push_back( avl_tree.distance( avl_tree.lower_bound(lower_bound), avl_tree.upper_bound(upper_bound) ) );
         }
     }
+
     return data;
 }
 

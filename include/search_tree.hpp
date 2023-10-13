@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <utility>
-#include <tuple>
+#include <iterator>
 #include <memory>
 #include <type_traits>
 #include <algorithm>
@@ -21,19 +21,21 @@ namespace yLAB {
 template<typename KeyT = int, typename Compare = std::less<KeyT>>
 class AVL_Tree final {
 public:
-    using key_type        = KeyT;
-    using value_type      = KeyT;
-    using size_type       = std::size_t;
-    using key_compare     = Compare;
-    using value_compare   = Compare;
-    using reference       = value_type&;
-    using const_reference = const value_type&;
-    using node_type       = detail::Node<key_type>;
-    using difference_type = typename node_type::difference_type;
-    using pointer         = node_type*;
-    using const_pointer   = const node_type*;
-    using iterator        = detail::TreeIterator<key_type>;
-    using const_iterator  = iterator;
+    using key_type               = KeyT;
+    using value_type             = KeyT;
+    using size_type              = std::size_t;
+    using key_compare            = Compare;
+    using value_compare          = Compare;
+    using reference              = value_type&;
+    using const_reference        = const value_type&;
+    using node_type              = detail::Node<key_type>;
+    using difference_type        = typename node_type::difference_type;
+    using pointer                = node_type*;
+    using const_pointer          = const node_type*;
+    using iterator               = detail::TreeIterator<key_type>;
+    using const_iterator         = iterator;
+    using reverse_iterator       = std::reverse_iterator<iterator>;
+    using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 private:
     using end_node    = detail::EndNode<key_type>;
     using end_pointer = end_node*;
@@ -323,9 +325,11 @@ public:
     }
 
     const_iterator begin()  const noexcept { return const_iterator{begin_node_}; }
-    const_iterator cbegin() const noexcept { return begin(); }
     const_iterator end()    const noexcept { return const_iterator{end_ptr_}; }
+    const_iterator cbegin() const noexcept { return begin(); }
     const_iterator cend()   const noexcept { return end(); }
+    const_reverse_iterator rbegin() const { return std::make_reverse_iterator(end()); }
+    const_reverse_iterator rend() const { return std::make_reverse_iterator(begin()); }
 private:
     pointer right_turn(pointer pt) {
         set_child_parent_connection(pt, pt->left_);
