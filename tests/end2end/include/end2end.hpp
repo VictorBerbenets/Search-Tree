@@ -26,7 +26,7 @@ class generator final {
     using generator_type    = std::mt19937;
     using distribution_type = std::uniform_int_distribution<T>;
 
-    enum class Data : char {Key = 1, Query = 3};
+    enum class Data : char {Key = 1, Query = 100};
 
     static constexpr size_type MAX_KEYS_NUMBER    = 1000000;
     static constexpr size_type MAX_QUERIES_NUMBER = 100000;

@@ -24,7 +24,7 @@ class tree_painter final {
     std::string create_dir() {
         using namespace std::filesystem;
 
-        std::string relative_path = "../include/";
+        std::string relative_path = "../";
         directory_entry resource_dir(relative_path.append(DIR_NAME));
         relative_path.append("/");
         if (!resource_dir.is_directory()) {
@@ -47,9 +47,9 @@ class tree_painter final {
     }
 
     void create_node(std::ofstream& graph_file, pointer elem, size_type curr_node) const {
-        graph_file << "node" << curr_node << " [shape = Mrecord, style = filled, fillcolor = \"#FFD0D0\", label ="
-                    "\"{address: "<< elem << "|key: "<< elem->key_ << "|height: "<< elem->height_ << "|size: " << elem->size_ <<
-                    "| { <ptr1> left: " << elem->left_ << "| <ptr2> right: " << elem->right_ << "|parent: " << elem->parent_ << "}}\"]\n";
+        graph_file << "node" << curr_node << " [shape = Mrecord, style = filled, fillcolor = \"#ABFFF1\", label ="
+                    "\"{key: "<< elem->key_ << "|<ptr1> height: "<< elem->height_ << "| <ptr2> size: " << elem->size_ <<
+                    " }\"]\n";
     }
 
     void create_next_graph_node(std::ofstream& graph_file, pointer elem, size_type curr_node,
@@ -57,7 +57,7 @@ class tree_painter final {
         if (!elem) { return ; }
         create_node(graph_file, elem, next_node);
         graph_file << "node" << curr_node << ": <" << (orientir == Nodes::Left ? "ptr1" : "ptr2") << "> -> node"
-                   << next_node << "; ";
+                   << next_node << ";\n";
         ++next_node;
     }
 

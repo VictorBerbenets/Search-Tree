@@ -10,7 +10,6 @@
 #include <initializer_list>
 #include <queue>
 #include <cstddef>
-#include <cassert>
 
 #include "tree_iterator.hpp"
 #include "node.hpp"
@@ -320,7 +319,7 @@ public:
     bool empty() const noexcept     { return size_ == 0; };
 
     void graph_dump(const std::string& file_name = "graph.png") const {
-       graphics::tree_painter<KeyT> graph {end_ptr_};
+       graphics::tree_painter<KeyT> graph {root_node_};
        graph.graph_dump(file_name);
     }
 
