@@ -11,7 +11,7 @@
 namespace graphics {
 
 template<typename NodeKeyT>
-class tree_painter {
+class tree_painter final {
     using size_type    = std::size_t;
     using node_type    = yLAB::detail::Node<NodeKeyT>;
     using end_node_ptr = yLAB::detail::EndNode<NodeKeyT>*;

@@ -111,7 +111,7 @@ public:
 };
 
 template<typename KeyT>
-struct EndNode: public Node<KeyT> {
+struct EndNode final: public Node<KeyT> {
     using typename Node<KeyT>::pointer;
 
     explicit EndNode(pointer root = nullptr)

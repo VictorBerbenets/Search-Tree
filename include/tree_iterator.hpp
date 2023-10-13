@@ -12,7 +12,7 @@ namespace yLAB {
 namespace detail {
 
 template<typename KeyT>
-class TreeIterator {
+class TreeIterator final {
 public:
     using iterator_category = std::bidirectional_iterator_tag;
     using value_type        = Node<KeyT>;

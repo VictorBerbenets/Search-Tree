@@ -328,8 +328,8 @@ public:
     const_iterator end()    const noexcept { return const_iterator{end_ptr_}; }
     const_iterator cbegin() const noexcept { return begin(); }
     const_iterator cend()   const noexcept { return end(); }
-    const_reverse_iterator rbegin() const { return std::make_reverse_iterator(end()); }
-    const_reverse_iterator rend() const { return std::make_reverse_iterator(begin()); }
+    const_reverse_iterator rbegin() const  { return std::make_reverse_iterator(end()); }
+    const_reverse_iterator rend() const    { return std::make_reverse_iterator(begin()); }
 private:
     pointer right_turn(pointer pt) {
         set_child_parent_connection(pt, pt->left_);
