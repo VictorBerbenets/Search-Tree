@@ -39,3 +39,10 @@ bash ../tests/end2end/test_runner.sh <tests_number> <keys_number> <queries_numbe
 **max_determinant** - number of queries to be generated.  
 After running you can see a generated directory - tests/end2end/resources/.  
 There will be the tests themselves and the answers to them.
+## How to run compare programm:
+```bash
+bash ../compare/compare.sh
+```
+This program will output to a file compare/compare.txt comparison of the performance time  
+of the distance method in the AVL tree and std::distance().  
+Make sure that you have generated end2end tests before, so they are taken for comparison.
