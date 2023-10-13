@@ -7,7 +7,7 @@ thereby overtaking **std::distance()** function which works for O(n).
 ## How to build
 ```bash
 git clone git@github.com:VictorBerbenets/Search-Tree.git
-cd SearchTree/
+cd Search-Tree/
 git submodule init
 git submodule update
 cmake -S ./ -B build/ -DCMAKE_BUILD_TYPE=Release
