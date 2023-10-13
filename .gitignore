@@ -1,2 +1,4 @@
 **/build
 **/include/data
+**/tests/end2end/resources
+.vscode/

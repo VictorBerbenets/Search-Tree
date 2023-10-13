@@ -23,6 +23,11 @@ target_include_directories(unit
                            PRIVATE googletest/
                            PRIVATE ${INCLUDE_DIR}
                            )
-
+set_target_properties(
+    end2end PROPERTIES
+    CXX_STANDARD 20
+    CXX_STANDARD_REQUIRED ON
+    COMPILE_FLAGS "-Wall -Wextra"
+)
 target_link_libraries(unit gtest_main gmock_main)
 
