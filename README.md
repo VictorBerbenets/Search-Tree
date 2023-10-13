@@ -47,4 +47,4 @@ This program will output to a file **compare/compare.txt** comparison of the per
 of the distance method in the AVL tree and **std::distance()**.  
 Make sure that you have generated end2end tests before, so they are taken for comparison.
 ## Graphviz AVL tree visualization
-![Image alt](https://github.com/VictorBerbenets/SearchTree/raw/search_tree/data/avl_tree.png)
+![AVL tree](data/avl_tree.png)
