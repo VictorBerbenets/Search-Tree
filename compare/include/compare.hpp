@@ -7,15 +7,18 @@
 #include <stdexcept>
 #include <iterator>
 #include <chrono>
+#include <vector>
+#include <utility>
 #include <tuple>
 
 #include "search_tree.hpp"
 
 namespace compare {
 
+template<typename KeyT>
 class comporator final {
     using size_type = std::size_t;
-    
+    using range     = std::pair<KeyT, KeyT>;
     static constexpr char KEY   = 'k';
     static constexpr char QUERY = 'q';
 
@@ -34,9 +37,8 @@ public:
     comporator(const std::string& file_name)
     : file_name_ {file_name} {}
 
-    template<typename KeyT>
-    void distance_comparing() const {
-        std::ifstream data_file {file_name};
+    void distance_comparing() {
+        std::ifstream data_file {file_name_};
         if (!data_file.is_open()) {
             throw std::runtime_error{"error while opening compare.txt\n"};
         }
@@ -59,32 +61,43 @@ public:
                 if (!data_file.good()) {
                     break;
                 }
-                std::chrono
-                data.push_back( avl_tree.distance( avl_tree.lower_bound(lower_bound), avl_tree.upper_bound(upper_bound) ) );
+                
+                auto lower_iter = avl_tree.lower_bound(lower_bound);
+                auto upper_iter = avl_tree.upper_bound(upper_bound);
+
+                auto avl_start = std::chrono::high_resolution_clock::now();
+                auto avl_dist  = avl_tree.distance(lower_iter, upper_iter);
+                auto avl_end   = std::chrono::high_resolution_clock::now();
+                auto avl_time  = (avl_end - avl_start).count();
+                
+                auto std_dist_start = std::chrono::high_resolution_clock::now();
+                auto std_dist       = std::distance(lower_iter, upper_iter);
+                auto std_dist_end   = std::chrono::high_resolution_clock::now();
+                auto std_dist_time  = (avl_end - avl_start).count();
+
+                if (std_dist != avl_dist) {
+                    throw std::runtime_error{"error in distance method"};
+                }
+
+                data_.emplace_back(avl_time, std_dist_time, range{lower_bound, upper_bound});
             }
         }
 
     }
     
-    void dump() const {
+    void dump() {
+        distance_comparing();
+
         std::string comp_file = "compare.txt";
         std::ofstream dump_file(comp_file, std::ios::app);
         if (!dump_file.is_open()) {
             throw std::runtime_error{"error while opening compare.txt\n"};
         }
-        std::string clean_file_name = get_clean_file_name(file_name);
+        std::string clean_file_name = get_clean_file_name(file_name_);
 
         dump_file << "----------------------------------------------------------------\n";
         dump_file << "                         file name:      " << clean_file_name << '\n';
-        dump_file << "                         cache capacity: " << capacity_ << '\n';
-        dump_file << "                         data_size:      " << data_size_ << '\n';
-        dump_file << "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - \n";
-        dump_file << "                              Hits                              \n";
-        dump_file << "lfu: " << get_lfu_hits() << "\nperfect: " << get_perfect_hits() << '\n';
-        dump_file << "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - \n";
-        dump_file << "                              Time                              \n";
-        dump_file << "lfu: " << get_lfu_time() << "\nperfect: " << get_perfect_time() << '\n';
-        dump_file << "----------------------------------------------------------------\n\n";
+  
         if (!dump_file.good()) {
             throw std::runtime_error{"writing file error\n!"};
         }
@@ -93,7 +106,7 @@ public:
 
 private:
     std::string file_name_;
-    std::vector<std::tuple<double, double, size_type>>
+    std::vector<std::tuple<double, double, range>> data_;
 }; // <--- class comporator
 
 } // <--- namespace compare
