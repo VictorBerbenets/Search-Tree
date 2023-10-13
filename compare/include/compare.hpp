@@ -68,18 +68,18 @@ public:
                 auto avl_start = std::chrono::high_resolution_clock::now();
                 auto avl_dist  = avl_tree.distance(lower_iter, upper_iter);
                 auto avl_end   = std::chrono::high_resolution_clock::now();
-                auto avl_time  = (avl_end - avl_start).count();
+                std::chrono::duration<double> avl_dur = avl_end - avl_start;
                 
                 auto std_dist_start = std::chrono::high_resolution_clock::now();
                 auto std_dist       = std::distance(lower_iter, upper_iter);
                 auto std_dist_end   = std::chrono::high_resolution_clock::now();
-                auto std_dist_time  = (avl_end - avl_start).count();
+                std::chrono::duration<double> std_dist_dur = std_dist_end - std_dist_start;
 
                 if (std_dist != avl_dist) {
                     throw std::runtime_error{"error in distance method"};
                 }
 
-                data_.emplace_back(avl_time, std_dist_time, range{lower_bound, upper_bound});
+                data_.emplace_back(avl_dur.count(), std_dist_dur.count(), std_dist, range{lower_bound, upper_bound});
             }
         }
 
@@ -95,9 +95,18 @@ public:
         }
         std::string clean_file_name = get_clean_file_name(file_name_);
 
-        dump_file << "----------------------------------------------------------------\n";
-        dump_file << "                         file name:      " << clean_file_name << '\n';
-  
+        dump_file << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << std::endl;
+        dump_file << "                         file name:      " << clean_file_name     << std::endl;
+        for (size_type count {1}; auto val : data_) {
+            dump_file << "------------------------------------------------------------" << std::endl;
+            dump_file << "    range " << count << ": [ " << std::get<3>(val).first << "; "
+                      << std::get<3>(val).second << "]" << std::endl;
+            dump_file << "distance: " << std::get<2>(val) << std::endl;
+            dump_file << "avl tree time: " << std::get<0>(val)      << std::endl;
+            dump_file << "std::distance time: " << std::get<1>(val) << std::endl;
+            ++count;
+        }
+        dump_file << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" << std::endl;
         if (!dump_file.good()) {
             throw std::runtime_error{"writing file error\n!"};
         }
@@ -106,7 +115,7 @@ public:
 
 private:
     std::string file_name_;
-    std::vector<std::tuple<double, double, range>> data_;
+    std::vector<std::tuple<double, double, size_type, range>> data_;
 }; // <--- class comporator
 
 } // <--- namespace compare

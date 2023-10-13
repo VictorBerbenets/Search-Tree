@@ -9,7 +9,8 @@ int main(int argc, char* argv[]) {
         throw std::invalid_argument{"invalid number of command arguments: expected 1, got " + std::to_string(argc)};
     }
 
-    compare::comporator<int> comporator {argv[1]};
+    std::string file_name = argv[1];
+    compare::comporator<int> comporator {file_name};
     comporator.dump();
 }
 
