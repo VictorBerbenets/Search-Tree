@@ -36,7 +36,7 @@ bash ../tests/end2end/test_runner.sh <tests_number> <keys_number> <queries_numbe
 ```
 **tests_number** - the number of tests you want to generate.  
 **keys_number**  - number of keys to be generated.  
-**max_determinant** - number of queries to be generated.  
+**queries_number** - number of queries to be generated.  
 After running you can see a generated directory - tests/end2end/resources/.  
 There will be the tests themselves and the answers to them.
 ## How to run compare programm:
