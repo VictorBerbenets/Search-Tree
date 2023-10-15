@@ -264,6 +264,7 @@ public:
             end_ptr = node_type::get_most_right(root_node_);
             ++dist;
         }
+
         const_pointer child = start_ptr->left_;
         while(start_ptr != end_ptr && start_ptr) {
             if (find_in_subtree(start_ptr, end_ptr->key_) == cend()) {
