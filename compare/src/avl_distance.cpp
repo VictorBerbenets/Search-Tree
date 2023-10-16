@@ -4,9 +4,6 @@
 
 #include "search_tree.hpp"
 
-#define Green "\033[1;32m"
-#define Usual "\033[0m"
-
 int main() {
     static constexpr char KEY   = 'k';
     static constexpr char QUERY = 'q';
@@ -56,10 +53,10 @@ int main() {
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> dur = end - start;
 
+    std::cout << dur.count() << std::endl;
     for (auto val : ans) {
         std::cout << val << ' ';
     }
     std::cout << std::endl;
 
-    std::cout << Green "Time: " Usual << dur.count() << std::endl;
 }
