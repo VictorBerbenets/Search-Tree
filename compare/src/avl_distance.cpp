@@ -46,8 +46,11 @@ int main() {
             int lower_bound = *(iter + 1);
             int upper_bound = *(iter + 2);
             iter += 2;
-
-            ans.push_back(avl_tree.distance( avl_tree.lower_bound(lower_bound), avl_tree.upper_bound(upper_bound)));
+            if (lower_bound >= upper_bound) {
+                ans.push_back(0);
+            } else {
+                ans.push_back( avl_tree.distance( avl_tree.lower_bound(lower_bound), avl_tree.upper_bound(upper_bound)));
+            }
         }
     }
     auto end = std::chrono::high_resolution_clock::now();

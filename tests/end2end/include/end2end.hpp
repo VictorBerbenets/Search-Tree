@@ -26,7 +26,7 @@ class generator final {
     using generator_type    = std::mt19937;
     using distribution_type = std::uniform_int_distribution<T>;
 
-    enum class Data : char {Key = 1, Query = 100};
+    enum class Data : char {Key = 1, Query = 2};
 
     static constexpr size_type MAX_KEYS_NUMBER    = 1000000;
     static constexpr size_type MAX_QUERIES_NUMBER = 100000;
@@ -88,14 +88,18 @@ class generator final {
                 if (lower == MAX_KEY_VALUE) {
                     --lower;
                 }
-                auto upper = random_value(lower + 1, MAX_KEY_VALUE);
+                auto upper = random_value();
                 test_file << lower << ' ';
                 test_file << upper << ' ';
 
                 auto lower_it = set.lower_bound(lower);
                 auto upper_it = set.upper_bound(upper);
 
-                ans_file << std::distance(lower_it, upper_it) << ' ';
+                if (lower >= upper) {
+                    ans_file << 0 << ' ';
+                } else {
+                    ans_file << std::distance(lower_it, upper_it) << ' ';
+                }
 
                 ++queries;
             }
