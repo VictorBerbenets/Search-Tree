@@ -39,7 +39,7 @@ private:
     using end_node    = detail::EndNode<key_type>;
     using end_pointer = end_node*;
 
-    enum class childPosition : char {Left = 1, Right = 2};
+    enum class childPosition : char {Left, Right};
 
     static constexpr difference_type DIFF_HEIGHT = 2; // difference between two subtree heights
 public:
@@ -324,12 +324,14 @@ public:
        graph.graph_dump(file_name);
     }
 
-    const_iterator begin()  const noexcept { return const_iterator{begin_node_}; }
-    const_iterator end()    const noexcept { return const_iterator{end_ptr_}; }
+    const_iterator begin()  const noexcept { return begin_node_; }
+    const_iterator end()    const noexcept { return end_ptr_; }
     const_iterator cbegin() const noexcept { return begin(); }
     const_iterator cend()   const noexcept { return end(); }
-    const_reverse_iterator rbegin() const  { return std::make_reverse_iterator(end()); }
-    const_reverse_iterator rend() const    { return std::make_reverse_iterator(begin()); }
+    reverse_iterator rbegin() const  { return std::make_reverse_iterator(end()); }
+    reverse_iterator rend() const    { return std::make_reverse_iterator(begin()); }
+    const_reverse_iterator crbegin() const  { return std::make_reverse_iterator(cend()); }
+    const_reverse_iterator crend() const    { return std::make_reverse_iterator(cbegin()); }
 private:
     pointer right_turn(pointer pt) {
         set_child_parent_connection(pt, pt->left_);
