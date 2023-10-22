@@ -31,8 +31,8 @@ public:
     using difference_type        = typename node_type::difference_type;
     using pointer                = node_type*;
     using const_pointer          = const node_type*;
-    using iterator               = detail::TreeIterator<key_type>;
-    using const_iterator         = iterator;
+    using const_iterator         = detail::TreeIterator<key_type>;
+    using iterator               = const_iterator;
     using reverse_iterator       = std::reverse_iterator<iterator>;
     using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 private:
