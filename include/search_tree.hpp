@@ -128,7 +128,7 @@ public:
 
     template<typename... Args>
     std::pair<iterator, bool> emplace(Args... args) {
-        key_type key(std::forward<Args>(args)...);
+        key_type key(args...);
         return insert(key);
     }
 
