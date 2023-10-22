@@ -8,8 +8,6 @@ thereby overtaking **std::distance()** function which works for O(n).
 ```bash
 git clone git@github.com:VictorBerbenets/Search-Tree.git
 cd Search-Tree/
-git submodule init
-git submodule update
 cmake -S ./ -B build/ -DCMAKE_BUILD_TYPE=Release
 cd build/
 cmake --build .
