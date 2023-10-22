@@ -324,14 +324,14 @@ public:
        graph.graph_dump(file_name);
     }
 
-    const_iterator begin()  const noexcept { return begin_node_; }
-    const_iterator end()    const noexcept { return end_ptr_; }
+    iterator begin() const noexcept { return begin_node_; }
+    iterator end()   const noexcept { return end_ptr_;    }
     const_iterator cbegin() const noexcept { return begin(); }
-    const_iterator cend()   const noexcept { return end(); }
-    reverse_iterator rbegin() const  { return std::make_reverse_iterator(end()); }
-    reverse_iterator rend() const    { return std::make_reverse_iterator(begin()); }
-    const_reverse_iterator crbegin() const  { return std::make_reverse_iterator(cend()); }
-    const_reverse_iterator crend() const    { return std::make_reverse_iterator(cbegin()); }
+    const_iterator cend()   const noexcept { return end();   }
+    reverse_iterator rbegin() const { return std::make_reverse_iterator(end());   }
+    reverse_iterator rend()   const { return std::make_reverse_iterator(begin()); }
+    const_reverse_iterator crbegin() const { return std::make_reverse_iterator(cend());   }
+    const_reverse_iterator crend()   const { return std::make_reverse_iterator(cbegin()); }
 private:
     pointer right_turn(pointer pt) {
         set_child_parent_connection(pt, pt->left_);
