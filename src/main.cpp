@@ -7,8 +7,8 @@
 std::vector<int> get_data() {
     enum class Data : char {Query= 'q', Key = 'k'};
 
-    yLAB::AVL_Tree<int> avl_tree {};
-    std::vector<int> data {};
+    yLAB::AVL_Tree<int> avl_tree;
+    std::vector<int> data;
 
     char marker = 0;
     int key     = 0;
