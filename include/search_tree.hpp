@@ -31,7 +31,7 @@ public:
     using difference_type        = typename node_type::difference_type;
     using pointer                = node_type*;
     using const_pointer          = const node_type*;
-    using const_iterator         = detail::TreeIterator<key_type>;
+    using const_iterator         = TreeIterator<key_type>;
     using iterator               = const_iterator;
     using reverse_iterator       = std::reverse_iterator<iterator>;
     using const_reverse_iterator = std::reverse_iterator<const_iterator>;
@@ -43,8 +43,8 @@ private:
 
     static constexpr difference_type DIFF_HEIGHT = 2; // difference between two subtree heights
 public:
-    template <typename Iter>
-    AVL_Tree(Iter begin, Iter end, const Compare& comp = Compare())
+    template<typename InputIter>
+    AVL_Tree(InputIter begin, InputIter end, const Compare& comp = Compare())
     : comp_ {comp} {
         for (; begin != end; ++begin) {
             insert(*begin);
@@ -171,16 +171,15 @@ public:
 
     size_type erase(const key_type& key) {
         size_type save_size = size();
-        node_type tmp_node{key};
-        erase(const_iterator{&tmp_node});
+        erase(find(key));
+
         return size() != save_size;
     }
 
-    iterator erase(const_iterator pos) {
-        auto erase_it = find(*pos);
-        if (pos == cend() || erase_it == cend()) { return end(); }
+    iterator erase(const_iterator erase_it) {
+        if (erase_it == cend()) { return end(); }
 
-        auto erase_ptr   = const_cast<pointer>(erase_it.get_pointer());
+        auto erase_ptr   = const_cast<pointer>(erase_it.ptr_);
         auto replace_ptr = erase_ptr->left_ ? node_type::get_most_right(erase_ptr->left_) : nullptr;
         pointer start_balance{nullptr};
         iterator next_iter = ++iterator{erase_ptr};
@@ -212,7 +211,7 @@ public:
     }
 
     iterator erase(const_iterator begin, const_iterator end) {
-        iterator tmp{nullptr};
+        iterator tmp {nullptr};
         for (; begin != end; ) {
             begin = erase(begin);
         }
@@ -254,7 +253,7 @@ public:
     int distance(const_iterator begin, const_iterator end) const {
         using ptrs_pair = std::pair<const_pointer, const_pointer>;
 
-        auto [start_ptr, end_ptr] = ptrs_pair(begin.get_pointer(), end.get_pointer());
+        auto [start_ptr, end_ptr] = ptrs_pair(begin.ptr_, end.ptr_);
 
         int dist {0};
         if (end_ptr == end_ptr_) {
