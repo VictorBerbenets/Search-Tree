@@ -9,13 +9,11 @@
 
 namespace yLAB {
 
-namespace detail {
-
 template<typename KeyT>
 class TreeIterator final {
 public:
     using iterator_category = std::bidirectional_iterator_tag;
-    using value_type        = Node<KeyT>;
+    using value_type        = detail::Node<KeyT>;
     using pointer           = value_type*;
     using reference         = value_type&;
     using const_pointer     = const value_type*;
@@ -24,8 +22,6 @@ public:
 
     TreeIterator(const_pointer ptr) noexcept
     : ptr_ {ptr} {}
-
-    const_pointer get_pointer() const noexcept { return ptr_; }
 
     TreeIterator& operator++() {
         ptr_ = ptr_->successor();
@@ -51,27 +47,16 @@ public:
 
     const KeyT& operator*() const noexcept { return ptr_->key_; }
     const KeyT* operator->() const noexcept { return std::addressof(ptr_->key_); }
+
+    bool operator==(TreeIterator rhs) const noexcept { return ptr_ == rhs.ptr_; }
+    bool operator!=(TreeIterator rhs) const noexcept { return !(*this == rhs); }
+    bool operator<(TreeIterator rhs)  const noexcept { return ptr_->key_ < rhs.ptr_->key_; }
+
+    template<typename Key, typename Compare> friend class AVL_Tree;
 private:
-/*------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------*/
     const_pointer ptr_;
-}; // <--- class TreeIterator
-
-template<typename KeyT>
-bool operator==(TreeIterator<KeyT> lhs, TreeIterator<KeyT> rhs) noexcept {
-    return lhs.get_pointer() == rhs.get_pointer();
-}
-
-template<typename KeyT>
-bool operator!=(TreeIterator<KeyT> lhs, TreeIterator<KeyT> rhs) noexcept {
-    return !(lhs == rhs);
-}
-
-template<typename KeyT>
-bool operator<(TreeIterator<KeyT> lhs, TreeIterator<KeyT> rhs) noexcept {
-    return lhs.get_pointer()->key_ < rhs.get_pointer()->key_;
-}
-
-} // <--- namespace detail
+};
 
 } // <--- namespace yLAB
 
