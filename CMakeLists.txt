@@ -7,10 +7,7 @@ set(INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
 aux_source_directory(./src/ SRC_DIR)
 
 add_executable(${PROJECT_NAME} ${SRC_DIR})
-
-target_include_directories( ${PROJECT_NAME}
-                            PRIVATE
-                            ${INCLUDE_DIR})
+target_include_directories( ${PROJECT_NAME} PRIVATE ${INCLUDE_DIR})
 
 set_target_properties(
     ${PROJECT_NAME} PROPERTIES
@@ -25,4 +22,3 @@ find_package(Threads REQUIRED)
 
 add_subdirectory(tests)
 add_subdirectory(compare)
-
