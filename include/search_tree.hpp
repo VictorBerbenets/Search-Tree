@@ -43,7 +43,7 @@ private:
 
     static constexpr difference_type DIFF_HEIGHT = 2; // difference between two subtree heights
 public:
-    template<typename InputIter>
+    template<std::input_iterator InputIter>
     AVL_Tree(InputIter begin, InputIter end, const Compare& comp = Compare())
     : comp_ {comp} {
         for (; begin != end; ++begin) {
