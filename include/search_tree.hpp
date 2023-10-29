@@ -170,43 +170,14 @@ public:
 
     size_type erase(const key_type& key) {
         size_type save_size = size();
-        erase(find(key));
+        erase_node(find(key));
 
         return size() != save_size;
     }
 
     iterator erase(const_iterator erase_it) {
-        if (erase_it == cend()) { return end(); }
-
-        auto erase_ptr   = erase_it.ptr_;
-        auto replace_ptr = erase_ptr->left_ ? node_type::get_most_right(erase_ptr->left_) : nullptr;
-        pointer start_balance{nullptr};
-        iterator next_iter = ++construct_iterator(erase_ptr);
-        if (replace_ptr) {
-            if (replace_ptr->parent_ != erase_ptr) {
-                replace_ptr->parent_->right_ = nullptr;
-            }
-            set_child_parent_connection(erase_ptr, replace_ptr);
-
-            if (erase_ptr->left_ != replace_ptr) {
-                auto most_replace_left = node_type::get_most_left(replace_ptr);
-                start_balance          = most_replace_left;
-                connect_two_nodes(most_replace_left, erase_ptr->left_, childPosition::Left);
-            } else {
-                start_balance = replace_ptr;
-            }
-            connect_two_nodes(replace_ptr, erase_ptr->right_, childPosition::Right);
-        } else {
-            start_balance = erase_ptr->parent_;
-            set_child_parent_connection(erase_ptr, erase_ptr->right_);
-        }
-        delete erase_ptr;
-        correct_nodes(start_balance);
-        balance_tree(start_balance);
-        begin_node_ = node_type::get_most_left(end_ptr_);
-        --size_;
-
-        return next_iter;
+        if (erase_it.ptr_ != find(*erase_it).ptr_) { return end(); }
+        return erase_node(erase_it);
     }
 
     iterator erase(const_iterator begin, const_iterator end) {
@@ -251,7 +222,6 @@ public:
     int distance(const_iterator begin, const_iterator end) const {
         pointer start_ptr = begin.ptr_;
         pointer end_ptr   = end.ptr_;
-        //auto [start_ptr, end_ptr] = ptrs_pair(begin.ptr_, end.ptr_);
 
         int dist {0};
         if (end_ptr == end_ptr_) {
@@ -480,20 +450,38 @@ private:
         return cend();
     }
 
-    void erase_node(pointer erase_ptr, pointer child) { // erase_ptr doesn't have at least one child
-        auto erase_parent = erase_ptr->parent_;
-        if (child) {
-            (erase_parent->left_ == erase_ptr ? erase_parent->left_ : erase_parent->right_) = child;
-            child->parent_ = erase_parent;
+    iterator erase_node(iterator erase_it) {
+        if (erase_it == end()) { return end(); }
+
+        auto erase_ptr   = erase_it.ptr_;
+        auto replace_ptr = erase_ptr->left_ ? node_type::get_most_right(erase_ptr->left_) : nullptr;
+        pointer start_balance{nullptr};
+        iterator next_iter = ++construct_iterator(erase_ptr);
+        if (replace_ptr) {
+            if (replace_ptr->parent_ != erase_ptr) {
+                replace_ptr->parent_->right_ = nullptr;
+            }
+            set_child_parent_connection(erase_ptr, replace_ptr);
+
+            if (erase_ptr->left_ != replace_ptr) {
+                auto most_replace_left = node_type::get_most_left(replace_ptr);
+                start_balance          = most_replace_left;
+                connect_two_nodes(most_replace_left, erase_ptr->left_, childPosition::Left);
+            } else {
+                start_balance = replace_ptr;
+            }
+            connect_two_nodes(replace_ptr, erase_ptr->right_, childPosition::Right);
         } else {
-            (erase_parent->left_ == erase_ptr ? erase_parent->left_ : erase_parent->right_) = nullptr;
-        }
-        if (erase_ptr == root_node_) {
-            root_node_ = child;
+            start_balance = erase_ptr->parent_;
+            set_child_parent_connection(erase_ptr, erase_ptr->right_);
         }
         delete erase_ptr;
-        correct_heights(erase_parent);
-        balance_tree(erase_parent);
+        correct_nodes(start_balance);
+        balance_tree(start_balance);
+        begin_node_ = node_type::get_most_left(end_ptr_);
+        --size_;
+
+        return next_iter;
     }
 
     void rebalance_tree_pointers() noexcept {
@@ -530,7 +518,7 @@ private:
     }
 
     void clear_tree() noexcept {
-        for (pointer curr_node = root_node_, tmp{0}; curr_node; curr_node = tmp) {
+        for (pointer curr_node = root_node_, tmp {nullptr}; curr_node; curr_node = tmp) {
             if (!curr_node->left_) {
                 tmp = curr_node->right_;
                 delete curr_node;
