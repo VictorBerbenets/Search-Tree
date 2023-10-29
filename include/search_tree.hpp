@@ -170,7 +170,12 @@ public:
 
     size_type erase(const key_type& key) {
         size_type save_size = size();
-        erase_node(find(key));
+
+        auto erase_it = find(key);
+        if (erase_it == end()) {
+            return 0;
+        }
+        erase_node(erase_it);
 
         return size() != save_size;
     }
