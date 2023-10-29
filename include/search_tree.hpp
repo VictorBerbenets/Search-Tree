@@ -176,7 +176,7 @@ public:
     }
 
     iterator erase(const_iterator erase_it) {
-        if (erase_it.ptr_ != find(*erase_it).ptr_) { return end(); }
+        if (erase_it.ptr_ != find(*erase_it).ptr_) { return std::next(erase_it); }
         return erase_node(erase_it);
     }
 
@@ -451,7 +451,7 @@ private:
     }
 
     iterator erase_node(iterator erase_it) {
-        if (erase_it == end()) { return end(); }
+        if (erase_it == end()) { return std::next(erase_it); }
 
         auto erase_ptr   = erase_it.ptr_;
         auto replace_ptr = erase_ptr->left_ ? node_type::get_most_right(erase_ptr->left_) : nullptr;
