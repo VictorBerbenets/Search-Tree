@@ -12,10 +12,3 @@ target_include_directories(end2end PRIVATE end2end/include ${INCLUDE_DIR})
 target_include_directories(unit PRIVATE ${INCLUDE_DIR})
 
 target_link_libraries(unit PRIVATE ${GTEST_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
-
-set_target_properties(
-    end2end PROPERTIES
-    CXX_STANDARD 20
-    CXX_STANDARD_REQUIRED ON
-)
-
