@@ -127,14 +127,13 @@ public:
     }
 
     template<typename... Args>
-    std::pair<iterator, bool> emplace(Args... args) {
-        key_type key(args...);
-        return insert(key);
+    std::pair<iterator, bool> emplace(Args&&... args) {
+        return insert( key_t(std::forward<Args>(args)...) );
     }
 
     void insert(std::initializer_list<value_type> ilist) {
-        for(auto il_it = ilist.begin(); il_it != ilist.end(); ++il_it) {
-            insert(*il_it);
+        for(auto&& val : ilist) {
+            insert(val);
         }
     }
 
@@ -482,7 +481,7 @@ private:
         return cend();
     }
 
-    void erase_node(pointer& erase_ptr, pointer child) { // erase_ptr doesn't have at least one child
+    void erase_node(pointer erase_ptr, pointer child) { // erase_ptr doesn't have at least one child
         auto erase_parent = erase_ptr->parent_;
         if (child) {
             (erase_parent->left_ == erase_ptr ? erase_parent->left_ : erase_parent->right_) = child;
