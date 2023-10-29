@@ -76,7 +76,7 @@ public:
     : root_ptr_ {ptr},
       dir_path_ {create_dir()} {}
 
-    void graph_dump(const std::string& file_name = "graph") const {
+    void graph_dump(const std::string& file_name) const {
         if (!root_ptr_) {
             std::cout << "Tree is empty" << std::endl;
             return ;

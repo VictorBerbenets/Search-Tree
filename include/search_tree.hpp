@@ -291,7 +291,7 @@ public:
     size_type size() const noexcept { return size_; };
     bool empty() const noexcept     { return size_ == 0; };
 
-    void graph_dump(const std::string& file_name = "graph.png") const {
+    void graph_dump(const std::string& file_name) const {
        graphics::tree_painter<KeyT> graph {root_node_};
        graph.graph_dump(file_name);
     }
