@@ -456,7 +456,7 @@ private:
         auto erase_ptr   = erase_it.ptr_;
         auto replace_ptr = erase_ptr->left_ ? node_type::get_most_right(erase_ptr->left_) : nullptr;
         pointer start_balance{nullptr};
-        iterator next_iter = ++construct_iterator(erase_ptr);
+        iterator next_iter = std::next(erase_it);
         if (replace_ptr) {
             if (replace_ptr->parent_ != erase_ptr) {
                 replace_ptr->parent_->right_ = nullptr;
