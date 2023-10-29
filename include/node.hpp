@@ -22,18 +22,18 @@ struct Node {
 
     virtual ~Node() {};
 
-    const_pointer predecessor() const { /*predecessor - the node that lies just behind the given node*/
+    pointer predecessor() const { /*predecessor - the node that lies just behind the given node*/
         if (left_) {
             return get_most_right(left_);
         }
-        return go_upper_dec();
+        return const_cast<pointer>(go_upper_dec());
     }
 
-    const_pointer successor() const { /*successor - the node that lies just after the given node*/
+    pointer successor() const { /*successor - the node that lies just after the given node*/
         if (right_) {
             return get_most_left(right_);
         }
-        return go_upper_inc();
+        return const_cast<pointer>(go_upper_inc());
     }
 
     static auto get_most_right(pointer start) noexcept {

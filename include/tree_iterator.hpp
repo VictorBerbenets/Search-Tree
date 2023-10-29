@@ -20,9 +20,6 @@ public:
     using const_reference   = const value_type&;
     using difference_type   = std::ptrdiff_t;
 
-    TreeIterator(const_pointer ptr) noexcept
-    : ptr_ {ptr} {}
-
     TreeIterator& operator++() {
         ptr_ = ptr_->successor();
         return *this;
@@ -50,12 +47,11 @@ public:
 
     bool operator==(TreeIterator rhs) const noexcept { return ptr_ == rhs.ptr_; }
     bool operator!=(TreeIterator rhs) const noexcept { return !(*this == rhs); }
-    bool operator<(TreeIterator rhs)  const noexcept { return ptr_->key_ < rhs.ptr_->key_; }
 
     template<typename Key, typename Compare> friend class AVL_Tree;
 private:
 /*----------------------------------------------------------------------------------*/
-    const_pointer ptr_;
+    pointer ptr_ {nullptr};
 };
 
 } // <--- namespace yLAB

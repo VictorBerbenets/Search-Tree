@@ -158,14 +158,14 @@ public:
                 }
                 curr_node = curr_node->right_;
             } else {
-                return {iterator{curr_node}, false};
+                return {construct_iterator(curr_node), false};
             }
         }
 
         balance_tree(curr_node);
         begin_node_ = node_type::get_most_left(begin_node_);
 
-        return {iterator{curr_node}, true};
+        return {construct_iterator(curr_node), true};
     }
 
     size_type erase(const key_type& key) {
@@ -178,10 +178,10 @@ public:
     iterator erase(const_iterator erase_it) {
         if (erase_it == cend()) { return end(); }
 
-        auto erase_ptr   = const_cast<pointer>(erase_it.ptr_);
+        auto erase_ptr   = erase_it.ptr_;
         auto replace_ptr = erase_ptr->left_ ? node_type::get_most_right(erase_ptr->left_) : nullptr;
         pointer start_balance{nullptr};
-        iterator next_iter = ++iterator{erase_ptr};
+        iterator next_iter = ++construct_iterator(erase_ptr);
         if (replace_ptr) {
             if (replace_ptr->parent_ != erase_ptr) {
                 replace_ptr->parent_->right_ = nullptr;
@@ -210,7 +210,6 @@ public:
     }
 
     iterator erase(const_iterator begin, const_iterator end) {
-        iterator tmp {nullptr};
         for (; begin != end; ) {
             begin = erase(begin);
         }
@@ -230,7 +229,7 @@ public:
                 curr_node = curr_node->right_;
             }
         }
-        return result ? result : cend();
+        return result ? construct_iterator(result) : cend();
     }
 
     const_iterator upper_bound(const key_type& key) const {
@@ -246,13 +245,13 @@ public:
                 curr_node = curr_node->right_;
             }
         }
-        return result ? result : cend();
+        return result ? construct_iterator(result) : cend();
     }
 
     int distance(const_iterator begin, const_iterator end) const {
-        using ptrs_pair = std::pair<const_pointer, const_pointer>;
-
-        auto [start_ptr, end_ptr] = ptrs_pair(begin.ptr_, end.ptr_);
+        pointer start_ptr = begin.ptr_;
+        pointer end_ptr   = end.ptr_;
+        //auto [start_ptr, end_ptr] = ptrs_pair(begin.ptr_, end.ptr_);
 
         int dist {0};
         if (end_ptr == end_ptr_) {
@@ -322,8 +321,8 @@ public:
        graph.graph_dump(file_name);
     }
 
-    iterator begin() const noexcept { return begin_node_; }
-    iterator end()   const noexcept { return end_ptr_;    }
+    iterator begin() const noexcept { return construct_iterator(begin_node_); }
+    iterator end()   const noexcept { return construct_iterator(end_ptr_);    }
     const_iterator cbegin() const noexcept { return begin(); }
     const_iterator cend()   const noexcept { return end();   }
     reverse_iterator rbegin() const { return std::make_reverse_iterator(end());   }
@@ -468,14 +467,14 @@ private:
 
     bool is_disbalance(difference_type diff) const noexcept { return diff == DIFF_HEIGHT; }
 
-    const_iterator find_in_subtree(const_pointer start_find, const key_type& key) const noexcept(noexcept(comp_(key, key))) {
+    const_iterator find_in_subtree(pointer start_find, const key_type& key) const noexcept(noexcept(comp_(key, key))) {
         while(start_find) {
             if (comp_(key, start_find->key_)) {
                 start_find = start_find->left_;
             } else if (comp_(start_find->key_, key)) {
                 start_find = start_find->right_;
             } else {
-                return const_iterator{start_find};
+                return construct_iterator(start_find);
             }
         }
         return cend();
@@ -513,7 +512,7 @@ private:
         root_node_->parent_ = end_ptr_;
         begin_node_ = root_node_;
 
-        return iterator{root_node_};
+        return construct_iterator(root_node_);
     }
 
     void create_node(pointer curr_node, const key_type& key, childPosition pos) {
@@ -542,6 +541,13 @@ private:
             }
         }
     }
+
+    iterator construct_iterator(pointer ptr) const noexcept {
+        iterator tmp;
+        tmp.ptr_ = ptr;
+        return tmp;
+    }
+
 private:
     pointer root_node_ {};
     end_node end_node_ {};
