@@ -225,9 +225,7 @@ public:
     }
 
     int distance(const_iterator begin, const_iterator end) const {
-        pointer start_ptr = begin.ptr_;
-        pointer end_ptr   = end.ptr_;
-
+        auto [start_ptr, end_ptr] = std::make_pair(begin.ptr_, end.ptr_);
         int dist {0};
         if (end_ptr == end_ptr_) {
             if (start_ptr == end_ptr) {
