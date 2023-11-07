@@ -7,8 +7,6 @@ aux_source_directory(./end2end/src END2END_TESTS)
 
 add_executable(unit ${UNIT_TESTS})
 add_executable(end2end ${END2END_TESTS} ${TESTING_FILES})
-
-option(HWT_SECOND_LEVEL OFF)
 if (HWT_SECOND_LEVEL)
     target_compile_definitions(end2end PRIVATE HWT_SECOND_LEVEL)
 endif()

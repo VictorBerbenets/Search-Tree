@@ -281,13 +281,7 @@ public:
     }
 
     size_type lower_than_one(const key_type& key) const {
-        auto lower_it = lower_bound(key);
-        if (lower_it == cend()) {
-            return 0;
-        }
-
-        auto root_ptr = lower_it.ptr_->left_;
-        return  root_ptr ? root_ptr->size_ : 0;
+        return distance(cbegin(), lower_bound(key));
     }
 
     bool contains(const key_type& key) const {

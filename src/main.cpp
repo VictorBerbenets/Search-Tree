@@ -5,7 +5,7 @@
 #include "search_tree.hpp"
 
 std::vector<int> get_data() {
-    enum class Data : char {Query= 'q', Key = 'k'};
+    enum class Data : char {Query= 'q', Key = 'k', N = 'n', M = 'm'};
 
     yLAB::AVL_Tree<int> avl_tree;
     std::vector<int> data;
@@ -14,10 +14,15 @@ std::vector<int> get_data() {
     int key     = 0;
     for (; std::cin.good(); ) {
         std::cin >> marker;
+        if (std::cin.fail()) { break;}
+
         if (marker == static_cast<char>(Data::Key)) {
             std::cin >> key;
             avl_tree.insert(key);
-        } else if (marker == static_cast<char>(Data::Query)) {
+        }
+#ifndef HWT_SECOND_LEVEL
+        std::cout << "HELL\n";
+        if (marker == static_cast<char>(Data::Query)) {
             int lower_bound {0};
             int upper_bound {0};
 
@@ -32,16 +37,35 @@ std::vector<int> get_data() {
                 data.push_back( avl_tree.distance( avl_tree.lower_bound(lower_bound), avl_tree.upper_bound(upper_bound) ) );
             }
         }
-    }
+#else
+        std::cout << "marker = " << marker << std::endl;
+        if (marker == static_cast<char>(Data::N)) {
+            std::cin >> key;
+            std::cout << "Key = " << key << std::endl;
+            data.push_back(avl_tree.lower_than_one(key));
+            std::cout << "N    = " << key << std::endl;
+            std::cout << "TREE\n";
+            for (auto&& val : avl_tree) {
+                std::cout << val << ' ';
+            }
+            std::cout << std::endl;
+            std::cout << "SIZE = " << avl_tree.lower_than_one(key) << std::endl;
+        } else if (marker == static_cast<char>(Data::M)) {
+            //std::cin >> key;
 
+            //data.push_back(*avl_tree.min_account_elem(key));
+        }
+#endif
+    }
     return data;
 }
 
 int main() {
-    std::vector<int> data = get_data();
+    auto data = get_data();
 
     for (auto val : data) {
         std::cout << val << ' ';
     }
     std::cout << std::endl;
+
 }

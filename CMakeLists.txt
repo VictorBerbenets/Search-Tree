@@ -13,6 +13,11 @@ target_include_directories( ${PROJECT_NAME} PRIVATE ${INCLUDE_DIR})
 find_package(GTest REQUIRED)
 enable_testing()
 
+option(HWT_SECOND_LEVEL OFF)
+if (HWT_SECOND_LEVEL)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE HWT_SECOND_LEVEL)
+endif()
+
 find_package(Threads REQUIRED)
 
 add_subdirectory(tests)
