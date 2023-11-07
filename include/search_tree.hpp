@@ -270,6 +270,26 @@ public:
         return dist;
     }
 
+    const_iterator min_account_elem(size_type number) const {
+        auto curr_ptr = cbegin().ptr_;
+        size_type counter = 0;
+        for ( ; counter < number && curr_ptr != end_ptr_; curr_ptr = curr_ptr->parent_, ++counter) {
+            counter += curr_ptr->size_;
+        }
+        if (counter == number) { return construct_iterator(curr_ptr); }
+
+    }
+
+    size_type lower_than_one(const key_type& key) const {
+        auto lower_it = lower_bound(key);
+        if (lower_it == cend()) {
+            return 0;
+        }
+
+        auto root_ptr = lower_it.ptr_->left_;
+        return  root_ptr ? root_ptr->size_ : 0;
+    }
+
     bool contains(const key_type& key) const {
         return find(key) != cend();
     }

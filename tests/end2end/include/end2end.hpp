@@ -26,11 +26,11 @@ class generator final {
     using generator_type    = std::mt19937;
     using distribution_type = std::uniform_int_distribution<T>;
 
-    enum class Data : char {Key = 1, Query = 2};
+    enum class Data : char {Key, Query, N = 'n', M = 'm'};
 
-    static constexpr size_type MAX_KEYS_NUMBER    = 1000000;
-    static constexpr size_type MAX_QUERIES_NUMBER = 100000;
-    static constexpr T MAX_KEY_VALUE = std::pow(2, sizeof(T) * 8 - 1) - 1; // max T value
+    static constexpr size_type MAX_KEYS_NUMBER    = 10000;
+    static constexpr size_type MAX_QUERIES_NUMBER = 10000;
+    static constexpr T MAX_KEY_VALUE = 10000; // max T value
     static constexpr T MIN_KEY_VALUE = -MAX_KEY_VALUE - 1;
 
     void create_source_directory() {
@@ -59,6 +59,11 @@ class generator final {
         return distr(generator_);
     }
 
+    Data random_value(Data first, Data second) {
+        distribution_type distr(1, 2);
+        return distr(generator_) == 1 ? Data::M : Data::N;
+    }
+
     Data key_or_query() {
         switch( static_cast<Data>(random_value(static_cast<T>(Data::Key), static_cast<T>(Data::Query))) ) {
             case Data::Query: return Data::Query;
@@ -73,16 +78,19 @@ class generator final {
         std::ofstream ans_file  {dirs::ans_dir + ans_name};
 
         std::set<T> set {};
+        auto data_type = Data::Key;
         for (size_type keys = 0, queries = 0; (keys + queries) != (keys_number_ + queries_number_); ) {
-            auto data_type = key_or_query();
             if (data_type == Data::Key && keys != keys_number_) {
                 test_file << 'k' << ' ';
                 auto key = random_value();
+
                 test_file << key << ' ';
                 set.insert(key);
+
                 ++keys;
             }
             if (data_type == Data::Query && queries != queries_number_) {
+#ifndef HWT_SECOND_LEVEL
                 test_file << 'q' << ' ';
                 auto lower = random_value();
                 if (lower == MAX_KEY_VALUE) {
@@ -101,8 +109,24 @@ class generator final {
                     ans_file << std::distance(lower_it, upper_it) << ' ';
                 }
 
+#else
+                auto random_query = random_value(Data::N, Data::M);
+                test_file << static_cast<char>(random_query) << ' ';
+                auto random_key = std::abs(random_value());
+                if (random_query == Data::N) {
+                    ans_file << std::distance(set.cbegin(), set.lower_bound(random_key)) << ' ';
+                    test_file << random_key << ' ';
+                } else {
+                    auto curr_iter = set.cbegin();
+                    auto order_num = random_key % set.size();
+                    std::advance(curr_iter, order_num);
+                    test_file << order_num + 1 << ' ';
+                    ans_file << *curr_iter << ' ';
+                }
+#endif
                 ++queries;
             }
+            data_type = key_or_query();
         }
         ans_file << std::endl;
     }
