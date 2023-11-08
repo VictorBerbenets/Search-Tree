@@ -36,7 +36,7 @@ The programm will be waiting for input data in stdin in such way:
 ```
 **k** - integer key attribute  
 **n** - range attribute. After **n** we get an upper bound for finding keys.  
-**m** - range attribute. After **m** we get k-th smallest key to find.  
+**m** - finding attribute. After **m** we get k-th smallest key to find.  
 At the end, the program will output the answers to each query.  
 ## How to run tests:
 ### You can run unit tests:
