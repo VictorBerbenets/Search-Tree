@@ -17,11 +17,10 @@ cmake -S ./ -B build/ -DCMAKE_BUILD_TYPE=Release [-DHWT_SECOND_LEVEL=ON/OFF]
 cd build/
 cmake --build .
 ```
-## To Run the program do
+## To Run the first level do
 ```bash
-./search_tree
+./search_tree_1
 ```
-If `-DHWT_SECOND_LEVEL=OFF`  
 The programm will be waiting for input data in stdin in such way:  
 ```bash
 <k> key1 <k> key2 ... <q> begin end ...
@@ -29,7 +28,10 @@ The programm will be waiting for input data in stdin in such way:
 **k** - integer key attribute  
 **q** - range attribute. After **q** we get the beginning and end of the search range.  
 At the end, the program will output a list of distances for each query **q**.  
-If `-DHWT_SECOND_LEVEL=ON`  
+## To Run the second level do
+```bash
+./search_tree_2
+```
 The programm will be waiting for input data in stdin in such way:  
 ```bash
 <k> key1 <k> key2 ... <n> upper_bound1 <m> min_elem1 ...

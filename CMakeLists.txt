@@ -7,16 +7,13 @@ set(INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
 
 aux_source_directory(./src/ SRC_DIR)
 
-add_executable(${PROJECT_NAME} ${SRC_DIR})
-target_include_directories( ${PROJECT_NAME} PRIVATE ${INCLUDE_DIR})
+add_executable(search_tree_1 src/search_tree_1.cpp)
+add_executable(search_tree_2 src/search_tree_2.cpp)
+target_include_directories( search_tree_1 PRIVATE ${INCLUDE_DIR} )
+target_include_directories( search_tree_2 PRIVATE ${INCLUDE_DIR} )
 
 find_package(GTest REQUIRED)
 enable_testing()
-
-option(HWT_SECOND_LEVEL OFF)
-if (HWT_SECOND_LEVEL)
-    target_compile_definitions(${PROJECT_NAME} PRIVATE HWT_SECOND_LEVEL)
-endif()
 
 find_package(Threads REQUIRED)
 

@@ -43,7 +43,7 @@ function run_tests {
                     echo -e "${red}failed${usual}"
                     npassed_count=$((${npassed_count} + 1))
                 fi
-                echo -en "${blue}distances in order:${usual}"
+                echo -en "${blue}answers:${usual}"
                 printf "\n"
                 cat ${ans_file}
                 printf "\n"

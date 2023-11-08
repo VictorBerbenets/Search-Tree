@@ -5,7 +5,7 @@
 #include "search_tree.hpp"
 
 std::vector<int> get_data() {
-    enum class Data : char {Query= 'q', Key = 'k', N = 'n', M = 'm'};
+    enum class Data : char {Query= 'q', Key = 'k'};
 
     yLAB::AVL_Tree<int> avl_tree;
     std::vector<int> data;
@@ -20,7 +20,6 @@ std::vector<int> get_data() {
             std::cin >> key;
             avl_tree.insert(key);
         }
-#ifndef HWT_SECOND_LEVEL
         if (marker == static_cast<char>(Data::Query)) {
             int lower_bound {0};
             int upper_bound {0};
@@ -36,15 +35,6 @@ std::vector<int> get_data() {
                 data.push_back( avl_tree.distance( avl_tree.lower_bound(lower_bound), avl_tree.upper_bound(upper_bound) ) );
             }
         }
-#else
-        if (marker == static_cast<char>(Data::N)) {
-            std::cin >> key;
-            data.push_back(avl_tree.lower_than_one(key));
-        } else if (marker == static_cast<char>(Data::M)) {
-            std::cin >> key;
-            data.push_back(*avl_tree.min_account_elem(key));
-        }
-#endif
     }
     return data;
 }
