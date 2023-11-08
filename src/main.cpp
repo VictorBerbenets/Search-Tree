@@ -21,7 +21,6 @@ std::vector<int> get_data() {
             avl_tree.insert(key);
         }
 #ifndef HWT_SECOND_LEVEL
-        std::cout << "HELL\n";
         if (marker == static_cast<char>(Data::Query)) {
             int lower_bound {0};
             int upper_bound {0};
@@ -38,22 +37,12 @@ std::vector<int> get_data() {
             }
         }
 #else
-        std::cout << "marker = " << marker << std::endl;
         if (marker == static_cast<char>(Data::N)) {
             std::cin >> key;
-            std::cout << "Key = " << key << std::endl;
             data.push_back(avl_tree.lower_than_one(key));
-            std::cout << "N    = " << key << std::endl;
-            std::cout << "TREE\n";
-            for (auto&& val : avl_tree) {
-                std::cout << val << ' ';
-            }
-            std::cout << std::endl;
-            std::cout << "SIZE = " << avl_tree.lower_than_one(key) << std::endl;
         } else if (marker == static_cast<char>(Data::M)) {
-            //std::cin >> key;
-
-            //data.push_back(*avl_tree.min_account_elem(key));
+            std::cin >> key;
+            data.push_back(*avl_tree.min_account_elem(key));
         }
 #endif
     }

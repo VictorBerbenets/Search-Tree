@@ -271,13 +271,33 @@ public:
     }
 
     const_iterator min_account_elem(size_type number) const {
-        auto curr_ptr = cbegin().ptr_;
-        size_type counter = 0;
-        for ( ; counter < number && curr_ptr != end_ptr_; curr_ptr = curr_ptr->parent_, ++counter) {
-            counter += curr_ptr->size_;
-        }
-        if (counter == number) { return construct_iterator(curr_ptr); }
+        if (empty() || number > size()) { return cend(); }
 
+        auto curr_ptr = cbegin().ptr_;
+        size_type path_len {0};
+        for (size_type counter = curr_ptr->size_; counter < number && curr_ptr != root_node_; counter = curr_ptr->size_) {
+            path_len = curr_ptr->size_;
+            curr_ptr = curr_ptr->parent_;
+        }
+        auto neighbour_size = [](pointer ptr) {
+                                    return ptr ? ptr->size_ : 0;
+                                };
+        if (curr_ptr->size_ - neighbour_size(curr_ptr->right_) == number) {
+            return construct_iterator(curr_ptr);
+        }
+        curr_ptr = curr_ptr->right_;
+        ++path_len;
+        while( (curr_ptr->size_ + path_len - neighbour_size(curr_ptr->right_)) != number ) {
+            auto compare_path_length = neighbour_size(curr_ptr->left_) + path_len + 1;
+            if (compare_path_length > number) {
+                curr_ptr = curr_ptr->left_;
+            } else if (compare_path_length < number) {
+                path_len += curr_ptr->size_ - curr_ptr->right_->size_;
+                curr_ptr = curr_ptr->right_;
+
+            } else { break; }
+        }
+        return construct_iterator(curr_ptr);
     }
 
     size_type lower_than_one(const key_type& key) const {
