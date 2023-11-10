@@ -279,22 +279,21 @@ public:
             path_len = curr_ptr->size_;
             curr_ptr = curr_ptr->parent_;
         }
-        auto neighbour_size = [](pointer ptr) {
+        auto node_size = [](pointer ptr) {
                                     return ptr ? ptr->size_ : 0;
                                 };
-        if (curr_ptr->size_ - neighbour_size(curr_ptr->right_) == number) {
+        if (curr_ptr->size_ - node_size(curr_ptr->right_) == number) {
             return construct_iterator(curr_ptr);
         }
         curr_ptr = curr_ptr->right_;
         ++path_len;
-        while( (curr_ptr->size_ + path_len - neighbour_size(curr_ptr->right_)) != number ) {
-            auto compare_path_length = neighbour_size(curr_ptr->left_) + path_len + 1;
+        while( (curr_ptr->size_ + path_len - node_size(curr_ptr->right_)) != number ) {
+            auto compare_path_length = node_size(curr_ptr->left_) + path_len + 1;
             if (compare_path_length > number) {
                 curr_ptr = curr_ptr->left_;
             } else if (compare_path_length < number) {
                 path_len += curr_ptr->size_ - curr_ptr->right_->size_;
                 curr_ptr = curr_ptr->right_;
-
             } else { break; }
         }
         return construct_iterator(curr_ptr);
@@ -584,7 +583,7 @@ private:
 
 template<typename KeyT, typename Compare>
 std::ostream& operator<<(std::ostream& os, const AVL_Tree<KeyT, Compare>& rhs) {
-    for (auto val : rhs) {
+    for (const auto&& val : rhs) {
         os << val << ' ';
     }
     return os << std::endl;
