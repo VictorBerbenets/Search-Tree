@@ -320,7 +320,7 @@ public:
     }
 
     size_type size() const noexcept { return size_; };
-    bool empty() const noexcept     { return size_ == 0; };
+    [[nodiscard]] bool empty() const noexcept     { return size_ == 0; };
 
     void graph_dump(const std::string& file_name) const {
        graphics::tree_painter<KeyT> graph {root_node_};
@@ -428,9 +428,7 @@ private:
     }
 
     void set_child_parent_connection(pointer pt, pointer child) {
-        auto parent = pt->parent_;
-
-        if (parent != end_ptr_) {
+        if (auto parent = pt->parent_; parent != end_ptr_) {
             (parent->left_ == pt ? parent->left_ : parent->right_) = child;
             if (child) {
                 child->parent_ = parent;
