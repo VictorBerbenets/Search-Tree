@@ -271,7 +271,8 @@ public:
     }
 
     const_iterator min_account_elem(size_type number) const {
-        if (empty() || number > size() || number == 0) { return cend(); }
+        if (empty() || number == 0) { return cend(); }
+        if (number > size_) { return cbegin(); }
 
         auto curr_ptr = cbegin().ptr_;
         size_type path_len {0};
