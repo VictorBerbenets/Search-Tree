@@ -4,7 +4,7 @@
 
 #include "search_tree.hpp"
 
-std::vector<int> get_data() {
+auto get_data() {
     enum class Data : char {Key = 'k', N = 'n', M = 'm'};
 
     yLAB::AVL_Tree<int> avl_tree;
@@ -29,17 +29,20 @@ std::vector<int> get_data() {
                 data.push_back(*it);
             } else {
                 std::cerr << "Invalid m-query: " << key << "\ntree size: " << avl_tree.size() << std::endl;
-                return data;
+                return std::make_pair(data, false);
             }
         }
     }
-    return data;
+    return std::make_pair(data, true);
 }
 
 int main() {
     auto data = get_data();
+    if (!data.second) {
+        return -1; // input error
+    }
 
-    for (auto val : data) {
+    for (auto val : data.first) {
         std::cout << val << ' ';
     }
     std::cout << std::endl;
