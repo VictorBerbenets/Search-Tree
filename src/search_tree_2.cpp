@@ -4,6 +4,12 @@
 
 #include "search_tree.hpp"
 
+namespace colors {
+    const std::string usual = "\033[0m";
+    const std::string red   = "\033[1;31m";
+    const std::string blue  = "\033[1;36m";
+}
+
 std::vector<int> get_data() {
     enum class Data : char {Key = 'k', N = 'n', M = 'm'};
 
@@ -25,7 +31,12 @@ std::vector<int> get_data() {
             data.push_back(avl_tree.lower_than_one(key));
         } else if (marker == static_cast<char>(Data::M)) {
             std::cin >> key;
-            data.push_back(*avl_tree.min_account_elem(key));
+            if (auto it = avl_tree.min_account_elem(key); it != avl_tree.cend()) {
+                data.push_back(*it);
+            } else {
+                std::cerr << colors::red + "Invalid m-query: " + colors::usual <<
+                key << colors::blue + "\ntree size: " + colors::usual << avl_tree.size() << std::endl;
+            }
         }
     }
     return data;

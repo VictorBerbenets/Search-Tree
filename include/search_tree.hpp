@@ -28,7 +28,7 @@ public:
     using reference              = value_type&;
     using const_reference        = const value_type&;
     using node_type              = detail::Node<key_type>;
-    using difference_type        = typename node_type::difference_type;
+    using difference_type        = node_type::difference_type;
     using pointer                = node_type*;
     using const_pointer          = const node_type*;
     using const_iterator         = TreeIterator<key_type>;
@@ -271,7 +271,7 @@ public:
     }
 
     const_iterator min_account_elem(size_type number) const {
-        if (empty() || number > size()) { return cend(); }
+        if (empty() || number > size() || number == 0) { return cend(); }
 
         auto curr_ptr = cbegin().ptr_;
         size_type path_len {0};

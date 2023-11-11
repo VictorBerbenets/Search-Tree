@@ -13,7 +13,8 @@ resource_dir="../tests/end2end/resources/"
 tests_dir="../tests/end2end/resources/tests/"
 answs_dir="../tests/end2end/resources/answers/"
 exe_test_file="./tests/end2end"
-exe_main_file="./search_tree"
+exe_main_file_1="./search_tree_1"
+exe_main_file_2="./search_tree_2"
 
 ##------------------------------------------------------------------------------------------##
 function run_tests {
@@ -32,7 +33,7 @@ function run_tests {
         for ((i = 1; i <= ${tests_number}; ++i))
         do
                 tmp_check=${tests_dir}/test${i}.txt
-                ${exe_main_file} < ${tmp_check} > compare_file.txt
+                ${exe_main_file_2} < ${tmp_check} > compare_file.txt
 
                 echo -n -e "${purple}Test ${i}: ${usual}\n"
                 ans_file="${answs_dir}ans${i}.txt"
