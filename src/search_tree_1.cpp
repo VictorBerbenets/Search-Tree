@@ -1,6 +1,7 @@
 #include <iostream>
 #include <iterator>
 #include <vector>
+#include <ranges>
 
 #include "search_tree.hpp"
 
