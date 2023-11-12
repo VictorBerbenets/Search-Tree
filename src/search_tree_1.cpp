@@ -42,9 +42,6 @@ std::vector<int> get_data() {
 int main() {
     auto data = get_data();
 
-    for (auto val : data) {
-        std::cout << val << ' ';
-    }
+    std::ranges::copy(data, std::ostream_iterator<int>{std::cout, " "});
     std::cout << std::endl;
-
 }

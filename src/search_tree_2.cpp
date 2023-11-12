@@ -1,6 +1,7 @@
 #include <iostream>
 #include <iterator>
 #include <vector>
+#include <ranges>
 
 #include "search_tree.hpp"
 
@@ -42,9 +43,6 @@ int main() {
         return -1; // input error
     }
 
-    for (auto val : data.first) {
-        std::cout << val << ' ';
-    }
+    std::ranges::copy(data.first, std::ostream_iterator<int>{std::cout, " "});
     std::cout << std::endl;
-
 }

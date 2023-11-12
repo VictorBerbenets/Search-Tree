@@ -249,7 +249,6 @@ public:
                 while (start_ptr->right_ == child) {
                     child     = start_ptr;
                     start_ptr = start_ptr->parent_;
-                    continue;
                 }
             } else {
                 start_ptr = start_ptr->right_;
