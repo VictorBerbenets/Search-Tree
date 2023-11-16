@@ -225,45 +225,21 @@ public:
     }
 
     int distance(const_iterator begin, const_iterator end) const {
-        auto [start_ptr, end_ptr] = std::make_pair(begin.ptr_, end.ptr_);
-        int dist {0};
+        auto [curr_ptr, end_ptr] = std::make_pair(begin.ptr_, end.ptr_);
+        size_type dist {0};
         if (end_ptr == end_ptr_) {
-            if (start_ptr == end_ptr) {
+            if (curr_ptr == end_ptr) {
                 return 0;
             }
             end_ptr = node_type::get_most_right(root_node_);
             ++dist;
         }
 
-        const_pointer child = start_ptr->left_;
-        while(start_ptr != end_ptr && start_ptr) {
-            if (find_in_subtree(start_ptr, end_ptr->key_) == cend()) {
-                if (start_ptr->left_ == child) {
-                    if (start_ptr->right_) {
-                        dist += start_ptr->right_->size_;
-                    }
-                }
-                child     = start_ptr;
-                start_ptr = start_ptr->parent_;
-                ++dist;
-                while (start_ptr->right_ == child) {
-                    child     = start_ptr;
-                    start_ptr = start_ptr->parent_;
-                }
+        while(curr_ptr != end_ptr) {
+            if (find_in_subtree(curr_ptr, end_ptr->key_) == cend()) {
+                curr_ptr = go_up_to_right_parent(curr_ptr, dist); 
             } else {
-                start_ptr = start_ptr->right_;
-                ++dist;
-                while(start_ptr != end_ptr) {
-                    if (comp_(end_ptr->key_, start_ptr->key_)) {
-                        start_ptr = start_ptr->left_;
-                    } else if (comp_(start_ptr->key_, end_ptr->key_)) {
-                        dist += start_ptr->size_ - start_ptr->right_->size_;
-                        start_ptr = start_ptr->right_;
-                    }
-                }
-                if (start_ptr->left_) {
-                    dist += start_ptr->left_->size_;
-                }
+                curr_ptr = go_down_to_right_node(curr_ptr, end_ptr, dist);
             }
         }
         return dist;
@@ -280,14 +256,16 @@ public:
             curr_ptr = curr_ptr->parent_;
         }
         auto node_size = [](pointer ptr) {
-                                    return ptr ? ptr->size_ : 0;
-                                };
+            return ptr ? ptr->size_ : 0;
+        };
+
         if (curr_ptr->size_ - node_size(curr_ptr->right_) == number) {
             return construct_iterator(curr_ptr);
         }
-        curr_ptr = curr_ptr->right_;
         ++path_len;
-        while( (curr_ptr->size_ + path_len - node_size(curr_ptr->right_)) != number ) {
+        curr_ptr = curr_ptr->right_;
+        auto full_path = curr_ptr->size_ + path_len - node_size(curr_ptr->right_);
+        while(full_path != number) {
             auto compare_path_length = node_size(curr_ptr->left_) + path_len + 1;
             if (compare_path_length > number) {
                 curr_ptr = curr_ptr->left_;
@@ -295,6 +273,7 @@ public:
                 path_len += curr_ptr->size_ - curr_ptr->right_->size_;
                 curr_ptr = curr_ptr->right_;
             } else { break; }
+            full_path = curr_ptr->size_ + path_len - node_size(curr_ptr->right_);
         }
         return construct_iterator(curr_ptr);
     }
@@ -562,6 +541,40 @@ private:
                 tmp->right_ = curr_node;
             }
         }
+    }
+
+    pointer go_down_to_right_node(pointer curr_ptr, pointer end_ptr, size_type& dist) const noexcept(noexcept(comp_(key_type{}, key_type{}))){
+        curr_ptr = curr_ptr->right_;
+        ++dist;
+        while(curr_ptr != end_ptr) {
+            if (comp_(end_ptr->key_, curr_ptr->key_)) {
+                curr_ptr = curr_ptr->left_;
+            } else if (comp_(curr_ptr->key_, end_ptr->key_)) {
+                dist += curr_ptr->size_ - curr_ptr->right_->size_;
+                curr_ptr = curr_ptr->right_;
+            }
+        }
+        if (curr_ptr->left_) {
+            dist += curr_ptr->left_->size_;
+        }
+        return curr_ptr;
+    }
+
+    pointer go_up_to_right_parent(pointer curr_ptr, size_type& dist) const noexcept {
+        auto child = curr_ptr->left_;
+        if (curr_ptr->left_ == child) {
+            if (curr_ptr->right_) {
+                dist += curr_ptr->right_->size_;
+            }
+        }
+        child     = curr_ptr;
+        curr_ptr = curr_ptr->parent_;
+        while (curr_ptr->right_ == child) {
+            child     = curr_ptr;
+            curr_ptr = curr_ptr->parent_;
+        }
+        ++dist;
+        return curr_ptr;
     }
 
     iterator construct_iterator(pointer ptr) const noexcept {
