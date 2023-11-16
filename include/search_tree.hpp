@@ -544,7 +544,8 @@ private:
         }
     }
 
-    pointer go_down_to_right_node(pointer curr_ptr, pointer end_ptr, size_type& dist) const noexcept(noexcept(comp_(key_type{}, key_type{}))){
+    pointer go_down_to_right_node(pointer curr_ptr, pointer end_ptr, size_type& dist) const
+                                          noexcept ( noexcept(comp_(key_type{}, key_type{})) ) {
         curr_ptr = curr_ptr->right_;
         ++dist;
         while(curr_ptr != end_ptr) {
