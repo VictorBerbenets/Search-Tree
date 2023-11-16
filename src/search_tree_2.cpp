@@ -1,11 +1,12 @@
 #include <iostream>
 #include <iterator>
 #include <vector>
+#include <optional>
 #include <ranges>
 
 #include "search_tree.hpp"
 
-auto get_data() {
+std::optional<std::vector<int>> get_data() {
     enum class Data : char {Key = 'k', N = 'n', M = 'm'};
 
     yLAB::AVL_Tree<int> avl_tree;
@@ -30,19 +31,19 @@ auto get_data() {
                 data.push_back(*it);
             } else {
                 std::cerr << "Invalid m-query: " << key << "\ntree size: " << avl_tree.size() << std::endl;
-                return std::make_pair(data, false);
+                return {};
             }
         }
     }
-    return std::make_pair(data, true);
+    return {data};
 }
 
 int main() {
     auto data = get_data();
-    if (!data.second) {
+    if (!data) {
         return -1; // input error
     }
 
-    std::ranges::copy(data.first, std::ostream_iterator<int>{std::cout, " "});
+    std::ranges::copy(*data, std::ostream_iterator<int>{std::cout, " "});
     std::cout << std::endl;
 }
