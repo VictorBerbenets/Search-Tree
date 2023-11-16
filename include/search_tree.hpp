@@ -258,14 +258,16 @@ public:
         auto node_size = [](pointer ptr) {
             return ptr ? ptr->size_ : 0;
         };
+        auto full_path = [](size_type sz1, size_type sz2, size_type extra_size) {
+            return sz1 + sz2 - extra_size;
+        };
 
         if (curr_ptr->size_ - node_size(curr_ptr->right_) == number) {
             return construct_iterator(curr_ptr);
         }
         ++path_len;
         curr_ptr = curr_ptr->right_;
-        auto full_path = curr_ptr->size_ + path_len - node_size(curr_ptr->right_);
-        while(full_path != number) {
+        while(full_path(curr_ptr->size_, path_len, node_size(curr_ptr->right_)) != number) {
             auto compare_path_length = node_size(curr_ptr->left_) + path_len + 1;
             if (compare_path_length > number) {
                 curr_ptr = curr_ptr->left_;
@@ -273,7 +275,6 @@ public:
                 path_len += curr_ptr->size_ - curr_ptr->right_->size_;
                 curr_ptr = curr_ptr->right_;
             } else { break; }
-            full_path = curr_ptr->size_ + path_len - node_size(curr_ptr->right_);
         }
         return construct_iterator(curr_ptr);
     }
