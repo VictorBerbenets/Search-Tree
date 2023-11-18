@@ -1,5 +1,4 @@
-#ifndef END2END_GENERATOR_
-#define END2END_GENERATOR_
+#pragma once
 
 #include <iostream>
 #include <string>
@@ -159,4 +158,3 @@ private:
 
 } // <--- namespace testing
 
-#endif

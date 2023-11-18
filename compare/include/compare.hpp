@@ -1,5 +1,4 @@
-#ifndef DISTANCE_COMPARING
-#define DISTANCE_COMPARING
+#pragma once
 
 #include <iostream>
 #include <string>
@@ -119,4 +118,3 @@ private:
 
 } // <--- namespace compare
 
-#endif
