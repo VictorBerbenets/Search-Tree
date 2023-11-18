@@ -1,5 +1,4 @@
-#ifndef TREE_NODE
-#define TREE_NODE
+#pragma once
 
 #include <utility>
 #include <algorithm>
@@ -122,6 +121,4 @@ struct EndNode final: public Node<KeyT> {
 } // <--- namespace detail
 
 } // <--- namespace graphics
-
-#endif
 

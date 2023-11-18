@@ -1,5 +1,4 @@
-#ifndef TREE_ITERATOR
-#define TREE_ITERATOR
+#pragma once
 
 #include <iterator>
 #include <memory>
@@ -56,4 +55,3 @@ private:
 
 } // <--- namespace yLAB
 
-#endif

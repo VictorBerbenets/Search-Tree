@@ -1,5 +1,4 @@
-#ifndef GRAPH_TREE
-#define GRAPH_TREE
+#pragma once
 
 #include <fstream>
 #include <filesystem>
@@ -124,6 +123,4 @@ private:
 };
 
 } // <--- namespace graphics
-
-#endif
 

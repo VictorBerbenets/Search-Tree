@@ -1,5 +1,4 @@
-#ifndef SEARCH_TREE
-#define SEARCH_TREE
+#pragma once
 
 #include <iostream>
 #include <utility>
@@ -610,4 +609,3 @@ bool operator==(const AVL_Tree<KeyT, Compare>& lhs, const AVL_Tree<KeyT, Compare
 
 } // <--- namespace yLAB
 
-#endif
